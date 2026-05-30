@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Gepackte Skills (werden bei Bedarf neu erzeugt)
+dist/
+*.zip
+
+# Editor
+.vscode/
+.idea/
