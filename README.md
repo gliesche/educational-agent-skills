@@ -18,7 +18,7 @@ und ihnen dabei spielerisch beibringt, ihre Ideen in Worte zu fassen.
 
 | Skill | Für wen | Was es tut |
 |---|---|---|
-| [`spiele-erfinden`](skills/spiele-erfinden/) | Kinder ~9 Jahre (3. Klasse) | Begleitet Kinder Schritt für Schritt, ihr eigenes Browser-Spiel zu erfinden. Sehr einfache Kinder-Sprache, klickbare Auswahl-Knöpfe statt Tippen, eine Frage nach der anderen. Am Ende steht ein sofort spielbares Spiel. Kernidee: Kinder lernen das **Beschreiben (Prompten)**. |
+| [`spiele-erfinden`](skills/spiele-erfinden/) | Kinder ~9 Jahre (3. Klasse) | Begleitet Kinder Schritt für Schritt, ihr eigenes Browser-Spiel zu erfinden. Sehr einfache Kinder-Sprache, klickbare Auswahl-Knöpfe statt Tippen, eine Frage nach der anderen. **10 Spiel-Typen** (Fangen, Hüpfen, Klicken, Labyrinth, Quiz, Memory, Renn-Spiel, Snake, Tier-Pflege) — sogar **echtes 3D** zum Herumlaufen. Am Ende steht ein sofort spielbares Spiel. Kernidee: Kinder lernen das **Beschreiben (Prompten)**. |
 
 Weitere Skills folgen. Ideen und Beiträge sind willkommen — siehe [Mitmachen](#mitmachen).
 
