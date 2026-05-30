@@ -19,6 +19,10 @@ und ihnen dabei spielerisch beibringt, ihre Ideen in Worte zu fassen.
   </tr>
 </table>
 
+### 🎮 [Spiele jetzt direkt im Browser →](https://gliesche.github.io/educational-agent-skills/)
+
+Vier fertige Beispielspiele (inkl. echtem 3D) — ein Klick, kein Download.
+
 > **Was sind Agent Skills?**
 > Skills sind kleine, wiederverwendbare „Bauanleitungen" für einen KI-Assistenten: ein Ordner
 > mit einer `SKILL.md` (was der Assistent tun soll und wann) und optionalen Referenz-Dateien.
