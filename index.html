@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🎮 Kinder erfinden Spiele — Galerie</title>
+<meta name="description" content="Spiele, die Kinder gemeinsam mit Claude erfunden haben. Direkt im Browser spielbar.">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,Arial,sans-serif;color:#1f2540;min-height:100vh;
+       background:linear-gradient(160deg,#ffe1f3 0%,#e3d3ff 40%,#cfe6ff 75%,#d6fff0 100%);}
+  .wrap{max-width:980px;margin:0 auto;padding:40px 20px 60px;}
+  header{text-align:center;margin-bottom:36px;}
+  h1{font-size:clamp(28px,5vw,44px);line-height:1.15;}
+  .tagline{font-size:clamp(16px,2.4vw,20px);color:#4a3b66;margin-top:12px;max-width:620px;margin-inline:auto;line-height:1.5;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px;}
+  .card{display:block;text-decoration:none;color:inherit;background:#fff;border-radius:20px;overflow:hidden;
+        box-shadow:0 8px 24px rgba(80,40,120,.15);transition:transform .15s, box-shadow .15s;}
+  .card:hover{transform:translateY(-6px);box-shadow:0 14px 32px rgba(80,40,120,.25);}
+  .thumb{position:relative;aspect-ratio:16/11;background:#222;overflow:hidden;}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .badge{position:absolute;top:10px;right:10px;background:#ff5fa2;color:#fff;font-weight:bold;
+         font-size:13px;padding:4px 10px;border-radius:999px;box-shadow:0 3px 8px rgba(0,0,0,.2);}
+  .card-body{padding:14px 16px 18px;}
+  .card-title{font-size:20px;font-weight:bold;}
+  .card-sub{font-size:14px;color:#6a5b86;margin-top:4px;}
+  .play{display:inline-block;margin-top:12px;font-weight:bold;color:#fff;background:#7a4fd0;
+        padding:8px 16px;border-radius:12px;font-size:15px;}
+  footer{text-align:center;margin-top:44px;color:#4a3b66;font-size:15px;line-height:1.6;}
+  footer a{color:#7a4fd0;font-weight:bold;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🎮 Kinder erfinden Spiele</h1>
+    <p class="tagline">Diese Spiele haben Kinder gemeinsam mit einer KI erfunden — sie haben die
+      Idee beschrieben, die KI hat sie gebaut. Klick auf ein Spiel und probier es aus! 🌟</p>
+  </header>
+
+  <div class="grid">
+    <a class="card" href="examples/einhorn-donuts/">
+      <div class="thumb"><img src="assets/games/ex-einhorn.png" alt="Einhorn-Donuts"></div>
+      <div class="card-body">
+        <div class="card-title">🦄 Einhorn-Donuts</div>
+        <div class="card-sub">Fang die Donuts, weich den Wolken aus.</div>
+        <span class="play">▶ Spielen</span>
+      </div>
+    </a>
+
+    <a class="card" href="examples/weltraum-sammeln/">
+      <div class="thumb"><span class="badge">3D</span><img src="assets/games/ex-weltraum.png" alt="Weltraum-Sammeln"></div>
+      <div class="card-body">
+        <div class="card-title">🚀 Weltraum-Sammeln</div>
+        <div class="card-sub">Echtes 3D — flieg herum und sammle Sterne.</div>
+        <span class="play">▶ Spielen</span>
+      </div>
+    </a>
+
+    <a class="card" href="examples/garten-snake/">
+      <div class="thumb"><img src="assets/games/ex-snake.png" alt="Garten-Snake"></div>
+      <div class="card-body">
+        <div class="card-title">🐍 Garten-Snake</div>
+        <div class="card-sub">Friss Äpfel und werde immer länger.</div>
+        <span class="play">▶ Spielen</span>
+      </div>
+    </a>
+
+    <a class="card" href="examples/hund-pflegen/">
+      <div class="thumb"><img src="assets/games/ex-hund.png" alt="Hund pflegen"></div>
+      <div class="card-body">
+        <div class="card-title">🐶 Hund pflegen</div>
+        <div class="card-sub">Füttern, spielen, schlafen — mach ihn glücklich.</div>
+        <span class="play">▶ Spielen</span>
+      </div>
+    </a>
+  </div>
+
+  <footer>
+    <p>Gebaut mit dem <strong>spiele-erfinden</strong>-Skill.<br>
+      Möchtest du dein eigenes Spiel erfinden? Schau ins Projekt:
+      <a href="https://github.com/gliesche/educational-agent-skills">educational-agent-skills</a></p>
+  </footer>
+</div>
+</body>
+</html>
