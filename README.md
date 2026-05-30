@@ -89,6 +89,9 @@ Dann in der App: **Einstellungen → Customize → Skills → `+`** und die `.zi
   oder Gewalttätiges, und er lenkt unpassende Wünsche sanft auf harmlose Varianten um.
 - **Lernziel:** Nicht das fertige Spiel ist das Wichtigste, sondern dass das Kind merkt:
   *Je besser ich meine Idee beschreibe, desto cooler wird mein Spiel.*
+- **Warum so?** Die Gestaltung folgt belegten pädagogischen Prinzipien (Konstruktionismus,
+  Selbstbestimmungstheorie, Flow, Growth Mindset, „low floor / wide walls"). Die Grundlagen mit
+  Quellen stehen in [docs/paedagogik.md](docs/paedagogik.md).
 
 ---
 
