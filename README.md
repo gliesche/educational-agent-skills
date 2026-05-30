@@ -29,9 +29,13 @@ und ihnen dabei spielerisch beibringt, ihre Ideen in Worte zu fassen.
 
 ## Skills in dieser Sammlung
 
-| Skill | Für wen | Was es tut |
+| Skill | Altersstufe | Was es tut |
 |---|---|---|
-| [`spiele-erfinden`](skills/spiele-erfinden/) | Kinder ~9 Jahre (3. Klasse) | Begleitet Kinder Schritt für Schritt, ihr eigenes Browser-Spiel zu erfinden. Sehr einfache Kinder-Sprache, klickbare Auswahl-Knöpfe statt Tippen, eine Frage nach der anderen. **10 Spiel-Typen** (Fangen, Hüpfen, Klicken, Labyrinth, Quiz, Memory, Renn-Spiel, Snake, Tier-Pflege) — sogar **echtes 3D** zum Herumlaufen. Am Ende steht ein sofort spielbares Spiel. Kernidee: Kinder lernen das **Beschreiben (Prompten)**. |
+| [`spiele-erfinden`](skills/spiele-erfinden/) | **≈6–12** (adaptiv, Kl. 1–6) | Begleitet Kinder Schritt für Schritt, ihr eigenes Browser-Spiel zu erfinden. **Passt sich dem Alter an** (Sprache, Leseaufwand, Schwierigkeit; bei Älteren optional ein Blick hinter die Kulissen = echtes Coding/Prompting). Klickbare Auswahl-Knöpfe statt Tippen, eine Frage nach der anderen. **10 Spiel-Typen** (Fangen, Hüpfen, Klicken, Labyrinth, Quiz, Memory, Renn-Spiel, Snake, Tier-Pflege) — sogar **echtes 3D** zum Herumlaufen. Kernidee: Kinder lernen das **Beschreiben (Prompten)**. |
+
+Die Sammlung ist über die Spalte **Altersstufe** nach Klassenstufe auffindbar. Jeder Skill ist
+intern alters-adaptiv, statt nach Klassen aufgeteilt zu sein — so bleiben die geteilten Bausteine
+(Spiel-Vorlagen, Pädagogik) an *einer* Stelle und driften nicht auseinander.
 
 Weitere Skills folgen. Ideen und Beiträge sind willkommen — siehe [Mitmachen](#mitmachen).
 
