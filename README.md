@@ -6,6 +6,19 @@ Lernenden mit KI-Assistenten etwas beizubringen, statt es nur für sie zu erledi
 Den Anfang macht ein Skill, der **Grundschulkinder ihr eigenes Computerspiel erfinden lässt** —
 und ihnen dabei spielerisch beibringt, ihre Ideen in Worte zu fassen.
 
+![3D-Sammelspiel, von einem Kind erfunden](assets/3d-sammelspiel.png)
+
+<p align="center"><em>Ein 3D-Spiel, beschrieben von einem Kind, gebaut von der KI — lauf herum und sammle die Sterne.</em></p>
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/fangspiel.png" width="100%"><br><sub>🍩 Fangspiel</sub></td>
+    <td align="center"><img src="assets/snake.png" width="100%"><br><sub>🐍 Snake</sub></td>
+    <td align="center"><img src="assets/memory.png" width="100%"><br><sub>🧠 Memory</sub></td>
+    <td align="center"><img src="assets/tier-pflege.png" width="100%"><br><sub>🐶 Tier-Pflege</sub></td>
+  </tr>
+</table>
+
 > **Was sind Agent Skills?**
 > Skills sind kleine, wiederverwendbare „Bauanleitungen" für einen KI-Assistenten: ein Ordner
 > mit einer `SKILL.md` (was der Assistent tun soll und wann) und optionalen Referenz-Dateien.
