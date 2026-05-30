@@ -96,19 +96,26 @@ hilft dem Kind, seine Idee Stück für Stück aufzubauen. Hier die empfohlenen F
 Knopf-Beispiele an die Idee des Kindes an):
 
 1. **Was für ein Spiel willst du?**
-   z. B. „🍎 Sachen fangen", „🦘 Hüpfen & ausweichen", „👆 Schnell tippen", „🔍 Den Weg finden", „❓ Ein Quiz"
-2. **Wer bist DU im Spiel? (deine Held-Figur)**
+   z. B. „🍎 Sachen fangen", „🦘 Hüpfen & ausweichen", „👆 Schnell tippen", „🔍 Den Weg finden",
+   „❓ Ein Quiz", „🧠 Memory", „🏎️ Renn-Spiel", „🐍 Snake", „🐶 Ein Tier pflegen"
+   (alle Spiel-Typen stehen in `references/spiel-vorlagen.md`).
+2. **Soll dein Spiel flach (2D) oder echt in 3D sein?**
+   z. B. „🟦 Flach (2D)" oder „🧊 Echt in 3D". Frag das nur, wenn es gerade passt — die meisten
+   Kinder-Ideen werden flach gebaut. Wähl 3D, wenn das Kind „echt 3D" oder „herumlaufen" will.
+   **Wichtig:** 3D braucht Internet (siehe `references/spiel-vorlagen.md`, Vorlage 10). Wenn kein
+   Internet da ist, sag das freundlich und biete die flache Variante an — die ist genauso cool.
+3. **Wer bist DU im Spiel? (deine Held-Figur)**
    z. B. „🐱 Eine Katze", „🤖 Ein Roboter", „🦄 Ein Einhorn", „🚀 Eine Rakete"
-3. **Was musst du im Spiel schaffen? (dein Ziel)**
+4. **Was musst du im Spiel schaffen? (dein Ziel)**
    z. B. „⭐ Sterne sammeln", „🍩 Donuts fangen", „🏁 Ins Ziel kommen", „💎 Schätze finden"
-4. **Wo spielt dein Spiel?**
+5. **Wo spielt dein Spiel?**
    z. B. „🌳 Im Wald", „🌌 Im Weltraum", „🌊 Unter Wasser", „🏫 In der Schule"
-5. **Was macht es schwer? (was du vermeiden musst)**
+6. **Was macht es schwer? (was du vermeiden musst)**
    z. B. „💣 Bomben", „👾 Monster", „⏰ Die Zeit läuft ab", „🕳️ Löcher"
-6. **Welche Farben magst du?** (optional, nur wenn das Kind Lust hat)
+7. **Welche Farben magst du?** (optional, nur wenn das Kind Lust hat)
    z. B. „🌈 Bunt", „💙 Blau", „💚 Grün", „💖 Pink"
 
-Du musst nicht stur alle 6 Fragen stellen. Wenn das Kind schon sprudelt und alles erzählt,
+Du musst nicht stur alle Fragen stellen. Wenn das Kind schon sprudelt und alles erzählt,
 nimm seine Idee auf und frag nur nach, was noch fehlt. Wenn ein Kind eine Frage nicht
 versteht, gib ihm einfach lustige Beispiele zur Auswahl.
 

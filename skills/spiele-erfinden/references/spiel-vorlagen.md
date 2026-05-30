@@ -1,19 +1,27 @@
 # Spiel-Vorlagen
 
 Fertige, erprobte HTML-Spiel-Gerüste für die häufigsten Spiel-Typen von Kindern. Jede Vorlage
-ist **eine einzige, in sich geschlossene `.html`-Datei**: läuft per Doppelklick, kein Internet,
-keine Installation. Such die passende Vorlage zur Idee des Kindes, **kopiere sie** und **passe
-nur die markierten Stellen an** (`/* ANPASSEN: ... */`): Figur, Ziel, Hindernis, Ort, Farben, Texte.
+ist **eine einzige, in sich geschlossene `.html`-Datei**: läuft per Doppelklick, keine Installation.
+Such die passende Vorlage zur Idee des Kindes, **kopiere sie** und **passe nur die markierten
+Stellen an** (`/* ANPASSEN: ... */`): Figur, Ziel, Hindernis, Ort, Farben, Texte.
+
+> **Internet?** Die Vorlagen 1–9 laufen **komplett offline** (kein Internet nötig — ideal für die
+> Schule). Nur die 3D-Vorlage (10) lädt eine 3D-Bibliothek aus dem Netz.
 
 So ordnest du die Idee zu:
 
 | Kind sagt … | Vorlage |
 |---|---|
 | Sachen fangen, sammeln, auffangen | **1. Fangspiel** |
-| Hüpfen, springen, ausweichen, rennen | **2. Hüpfspiel** |
+| Hüpfen, springen, ausweichen | **2. Hüpfspiel** |
 | schnell tippen/klicken, Maulwurf-Klopfen | **3. Klick-Spiel** |
 | Weg finden, Labyrinth, Ausgang suchen | **4. Labyrinth** |
 | Fragen, raten, Quiz, was weiß ich | **5. Quiz** |
+| Karten umdrehen, Paare finden, merken | **6. Memory** |
+| Rennen, Auto, Hindernissen ausweichen, Spuren | **7. Renn-Spiel** |
+| Schlange, wachsen, nicht selbst beißen | **8. Snake** |
+| Tier füttern, pflegen, kümmern, glücklich machen | **9. Tier-Pflege** |
+| **echtes 3D**, herumlaufen, 3D-Welt, Sterne/Würfel sammeln | **10. 3D-Sammelspiel** |
 
 Wenn die Idee mehrere Typen mischt, nimm die Vorlage, die dem **Hauptziel** am nächsten kommt,
 und füge Details aus der Idee hinzu (Ort, Farben, Figuren). Behalte immer: Startbildschirm,
@@ -533,6 +541,496 @@ function fertig(){
   document.getElementById('endeText').textContent='Du hattest '+punkte+' von '+FRAGEN.length+' richtig! 🎉';
   document.getElementById('ende').style.display='block';
 }
+</script>
+</body>
+</html>
+```
+
+---
+
+## 6. Memory (Kartenpaare finden)
+
+Karten umdrehen und gleiche Paare finden. Ruhig, gut fürs Gedächtnis. Reines Klick-/Tipp-Spiel.
+
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>🧠 Tier-Memory</title> <!-- ANPASSEN -->
+<style>
+  :root{ --bg:#243b6b; --akzent:#ffd23f; --karte:#ffffff; --rueck:#7aa2ff; } /* ANPASSEN: Farben */
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+  html,body{height:100%;font-family:system-ui,Arial,sans-serif;}
+  body{background:var(--bg);color:#fff;display:flex;flex-direction:column;align-items:center;
+       justify-content:center;min-height:100vh;gap:16px;padding:16px;}
+  #titel{font-size:26px;font-weight:bold;} #info{font-size:20px;}
+  #brett{display:grid;gap:10px;}
+  .karte{width:80px;height:80px;border-radius:14px;font-size:44px;cursor:pointer;display:flex;
+         align-items:center;justify-content:center;background:var(--rueck);box-shadow:0 5px 0 rgba(0,0,0,.25);transition:transform .12s;}
+  .karte.auf{background:var(--karte);} .karte.fertig{visibility:hidden;} .karte:active{transform:scale(.95);}
+  .schicht{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;text-align:center;background:rgba(0,0,0,.6);gap:18px;padding:24px;}
+  h1{font-size:40px;} p{font-size:22px;}
+  .btn{font-size:26px;padding:16px 34px;border:none;border-radius:18px;cursor:pointer;
+       background:var(--akzent);color:#222;font-weight:bold;box-shadow:0 6px 0 rgba(0,0,0,.25);}
+  .gross{font-size:72px;}
+</style>
+</head>
+<body>
+<div id="titel">🧠 Tier-Memory</div> <!-- ANPASSEN -->
+<div id="info">Paare: 0</div>
+<div id="brett"></div>
+<div class="schicht" id="start">
+  <div class="gross">🧠</div><h1>Memory</h1>
+  <p>Dreh die Karten um und finde die Paare! 🐶🐶</p>
+  <button class="btn" onclick="los()">▶ Start</button>
+</div>
+<div class="schicht" id="ende" style="display:none">
+  <div class="gross">🎉</div><h1>Alle gefunden!</h1>
+  <p id="endeText"></p>
+  <button class="btn" onclick="los()">🔄 Nochmal</button>
+</div>
+<script>
+const MOTIVE=['🐶','🐱','🦊','🐰','🐼','🐸']; // ANPASSEN: 6 Paare = 6 Emojis
+const SPALTEN=4;                              // ANPASSEN: Karten pro Reihe
+const brett=document.getElementById('brett'), info=document.getElementById('info');
+let auf, gefunden, sperre;
+function misch(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function los(){
+  document.getElementById('start').style.display='none';
+  document.getElementById('ende').style.display='none';
+  brett.style.gridTemplateColumns='repeat('+SPALTEN+',80px)';
+  const karten=misch([...MOTIVE,...MOTIVE]); auf=[]; gefunden=0; sperre=false;
+  info.textContent='Paare: 0'; brett.innerHTML='';
+  karten.forEach(m=>{ const k=document.createElement('div'); k.className='karte'; k.dataset.motiv=m;
+    k.addEventListener('click',()=>dreh(k)); brett.appendChild(k); });
+}
+function dreh(k){
+  if(sperre||k.classList.contains('auf')||k.classList.contains('fertig')) return;
+  k.textContent=k.dataset.motiv; k.classList.add('auf'); auf.push(k);
+  if(auf.length===2){ sperre=true;
+    if(auf[0].dataset.motiv===auf[1].dataset.motiv){
+      gefunden++; info.textContent='Paare: '+gefunden;
+      setTimeout(()=>{ auf.forEach(x=>x.classList.add('fertig')); auf=[]; sperre=false;
+        if(gefunden===MOTIVE.length) gewonnen(); },500);
+    } else {
+      setTimeout(()=>{ auf.forEach(x=>{x.textContent='';x.classList.remove('auf');}); auf=[]; sperre=false; },800);
+    }
+  }
+}
+function gewonnen(){
+  document.getElementById('endeText').textContent='Du hast alle '+MOTIVE.length+' Paare gefunden! Super Gedächtnis!';
+  document.getElementById('ende').style.display='flex';
+}
+</script>
+</body>
+</html>
+```
+
+---
+
+## 7. Renn-Spiel (Hindernissen ausweichen)
+
+Auto/Figur auf 3 Spuren, von oben kommen Hindernisse. Mit ← → (oder Tippen links/rechts) ausweichen.
+Wird immer schneller. Lange genug durchhalten = gewonnen.
+
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>🏎️ Renn-Spiel</title> <!-- ANPASSEN -->
+<style>
+  :root{ --bg:#33363d; --strasse:#4a4e57; --akzent:#ffd23f; } /* ANPASSEN */
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+  html,body{height:100%;font-family:system-ui,Arial,sans-serif;}
+  body{background:var(--bg);overflow:hidden;}
+  #spiel{position:relative;width:100vw;height:100vh;overflow:hidden;}
+  #strasse{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:300px;background:var(--strasse);}
+  .auto,.hindernis{position:absolute;font-size:50px;}
+  #punkte{position:absolute;top:12px;left:16px;color:#fff;font-size:28px;font-weight:bold;text-shadow:0 2px 6px rgba(0,0,0,.5);}
+  .schicht{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;text-align:center;color:#fff;background:rgba(0,0,0,.6);gap:18px;padding:24px;}
+  h1{font-size:40px;} p{font-size:22px;max-width:560px;line-height:1.4;}
+  button{font-size:26px;padding:16px 34px;border:none;border-radius:18px;cursor:pointer;
+         background:var(--akzent);color:#222;font-weight:bold;box-shadow:0 6px 0 rgba(0,0,0,.25);}
+  .gross{font-size:72px;}
+</style>
+</head>
+<body>
+<div id="spiel">
+  <div id="strasse"></div>
+  <div id="punkte">🏁 0</div>
+  <div class="auto" id="auto">🏎️</div> <!-- ANPASSEN: Figur -->
+  <div class="schicht" id="start">
+    <div class="gross">🏎️</div><h1>Renn-Spiel</h1>
+    <p>Weich den Hindernissen aus! 🚧<br>Fahr mit ← → oder tippe links/rechts.</p>
+    <button onclick="los()">▶ Start</button>
+  </div>
+  <div class="schicht" id="ende" style="display:none">
+    <div class="gross" id="endeEmoji">🎉</div><h1 id="endeTitel"></h1>
+    <p id="endeText"></p>
+    <button onclick="los()">🔄 Nochmal</button>
+  </div>
+</div>
+<script>
+const spiel=document.getElementById('spiel'), auto=document.getElementById('auto');
+const punkteEl=document.getElementById('punkte');
+const HINDERNIS='🚧'; // ANPASSEN
+const ZIEL=25;        // ANPASSEN: so viele Punkte = gewonnen
+const SPUREN=3;
+let spur, hindernisse, punkte, laeuft=false, tempo, spawnT, punktT;
+function spurX(s){ const mitte=window.innerWidth/2, breite=300, b=breite/SPUREN; return mitte-breite/2 + b*s + b/2; }
+function setzeAuto(){ auto.style.left=(spurX(spur)-25)+'px'; auto.style.bottom='20px'; }
+function los(){
+  document.getElementById('start').style.display='none';
+  document.getElementById('ende').style.display='none';
+  document.querySelectorAll('.hindernis').forEach(h=>h.remove());
+  spur=1; hindernisse=[]; punkte=0; tempo=4; laeuft=true;
+  punkteEl.textContent='🏁 0'; setzeAuto();
+  clearInterval(spawnT); spawnT=setInterval(spawn,1000); // ANPASSEN: Abstand der Hindernisse
+  clearInterval(punktT); punktT=setInterval(()=>{ if(laeuft){ punkte++; punkteEl.textContent='🏁 '+punkte;
+    tempo+=0.15; if(punkte>=ZIEL) ende(true); } },400);
+  loop();
+}
+function spawn(){
+  if(!laeuft) return;
+  const s=Math.floor(Math.random()*SPUREN);
+  const h=document.createElement('div'); h.className='hindernis'; h.textContent=HINDERNIS;
+  h.dataset.spur=s; h.style.left=(spurX(s)-25)+'px'; h.style.top='-60px';
+  spiel.appendChild(h); hindernisse.push(h);
+}
+function loop(){
+  if(!laeuft) return;
+  for(const h of hindernisse){
+    let y=parseFloat(h.style.top)+tempo; h.style.top=y+'px';
+    if(parseInt(h.dataset.spur)===spur && y>window.innerHeight-120 && y<window.innerHeight-20){ ende(false); return; }
+    if(y>window.innerHeight){ h.remove(); hindernisse=hindernisse.filter(x=>x!==h); }
+  }
+  requestAnimationFrame(loop);
+}
+function ende(gewonnen){
+  laeuft=false; clearInterval(spawnT); clearInterval(punktT);
+  document.getElementById('endeEmoji').textContent=gewonnen?'🏆':'💥';
+  document.getElementById('endeTitel').textContent=gewonnen?'Ziel erreicht!':'Bumm!';
+  document.getElementById('endeText').textContent=gewonnen?'Du bist super gefahren!':('Crash! Punkte: '+punkte);
+  document.getElementById('ende').style.display='flex';
+}
+function links(){ if(laeuft&&spur>0){spur--;setzeAuto();} }
+function rechts(){ if(laeuft&&spur<SPUREN-1){spur++;setzeAuto();} }
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft')links(); if(e.key==='ArrowRight')rechts(); });
+spiel.addEventListener('pointerdown',e=>{ if(!laeuft)return; if(e.clientX<window.innerWidth/2)links(); else rechts(); });
+</script>
+</body>
+</html>
+```
+
+---
+
+## 8. Snake (Schlange)
+
+Die Schlange wächst beim Fressen. Nicht in die Wand oder sich selbst beißen. Pfeiltasten oder Knöpfe.
+
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>🐍 Snake</title> <!-- ANPASSEN -->
+<style>
+  :root{ --bg:#10241a; --akzent:#ffd23f; } /* ANPASSEN */
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+  html,body{height:100%;font-family:system-ui,Arial,sans-serif;}
+  body{background:var(--bg);color:#fff;display:flex;flex-direction:column;align-items:center;
+       justify-content:center;min-height:100vh;gap:12px;}
+  #punkte{font-size:26px;font-weight:bold;}
+  canvas{background:#16341f;border-radius:10px;touch-action:none;}
+  #pad{display:grid;grid-template-columns:repeat(3,60px);gap:6px;margin-top:6px;}
+  #pad button{font-size:24px;padding:8px;border:none;border-radius:12px;background:var(--akzent);cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.3);}
+  #pad .leer{visibility:hidden;}
+  .schicht{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;text-align:center;background:rgba(0,0,0,.6);gap:18px;padding:24px;}
+  h1{font-size:40px;} p{font-size:22px;}
+  .btn{font-size:26px;padding:16px 34px;border:none;border-radius:18px;cursor:pointer;
+       background:var(--akzent);color:#222;font-weight:bold;box-shadow:0 6px 0 rgba(0,0,0,.25);}
+  .gross{font-size:72px;}
+</style>
+</head>
+<body>
+<div id="punkte">🍎 0</div>
+<canvas id="c" width="360" height="360"></canvas>
+<div id="pad">
+  <button class="leer"></button><button onclick="lenk(0,-1)">⬆️</button><button class="leer"></button>
+  <button onclick="lenk(-1,0)">⬅️</button><button class="leer"></button><button onclick="lenk(1,0)">➡️</button>
+  <button class="leer"></button><button onclick="lenk(0,1)">⬇️</button><button class="leer"></button>
+</div>
+<div class="schicht" id="start">
+  <div class="gross">🐍</div><h1>Snake</h1>
+  <p>Friss die Äpfel 🍎 und werde lang!<br>Steuere mit Pfeiltasten oder Knöpfen.<br>Beiß dich nicht selbst!</p>
+  <button class="btn" onclick="los()">▶ Start</button>
+</div>
+<div class="schicht" id="ende" style="display:none">
+  <div class="gross" id="endeEmoji">🎉</div><h1 id="endeTitel"></h1>
+  <p id="endeText"></p>
+  <button class="btn" onclick="los()">🔄 Nochmal</button>
+</div>
+<script>
+const c=document.getElementById('c'), ctx=c.getContext('2d');
+const N=18, ZELLE=c.width/N;   // ANPASSEN: Gittergröße
+const ZIEL=10;                 // ANPASSEN: so viele Äpfel = gewonnen
+let schlange, dir, next, apfel, punkte, laeuft=false, tick;
+function los(){
+  document.getElementById('start').style.display='none';
+  document.getElementById('ende').style.display='none';
+  schlange=[{x:9,y:9},{x:8,y:9},{x:7,y:9}]; dir={x:1,y:0}; next=dir;
+  punkte=0; document.getElementById('punkte').textContent='🍎 0';
+  setzeApfel(); laeuft=true;
+  clearInterval(tick); tick=setInterval(schritt,160); // ANPASSEN: Tempo (kleiner = schneller)
+  zeichne();
+}
+function setzeApfel(){ do{ apfel={x:Math.floor(Math.random()*N),y:Math.floor(Math.random()*N)}; }
+  while(schlange.some(s=>s.x===apfel.x&&s.y===apfel.y)); }
+function lenk(x,y){ if(!laeuft) return; if(x===-dir.x&&y===-dir.y) return; next={x,y}; } // nicht umkehren
+function schritt(){
+  dir=next;
+  const kopf={x:schlange[0].x+dir.x, y:schlange[0].y+dir.y};
+  if(kopf.x<0||kopf.x>=N||kopf.y<0||kopf.y>=N||schlange.some(s=>s.x===kopf.x&&s.y===kopf.y)){ ende(false); return; }
+  schlange.unshift(kopf);
+  if(kopf.x===apfel.x&&kopf.y===apfel.y){ punkte++; document.getElementById('punkte').textContent='🍎 '+punkte;
+    if(punkte>=ZIEL){ ende(true); return; } setzeApfel(); }
+  else schlange.pop();
+  zeichne();
+}
+function zeichne(){
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.font=ZELLE+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('🍎', apfel.x*ZELLE+ZELLE/2, apfel.y*ZELLE+ZELLE/2);
+  schlange.forEach((s,i)=>{ ctx.fillStyle=i===0?'#9be870':'#5fd36a'; ctx.fillRect(s.x*ZELLE+1,s.y*ZELLE+1,ZELLE-2,ZELLE-2); });
+}
+function ende(gewonnen){
+  laeuft=false; clearInterval(tick);
+  document.getElementById('endeEmoji').textContent=gewonnen?'🏆':'🐍';
+  document.getElementById('endeTitel').textContent=gewonnen?'Geschafft!':'Aua!';
+  document.getElementById('endeText').textContent=gewonnen?'Du hast es geschafft! Lange Schlange!':('Du hattest 🍎 '+punkte+'.');
+  document.getElementById('ende').style.display='flex';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowUp')lenk(0,-1); if(e.key==='ArrowDown')lenk(0,1);
+  if(e.key==='ArrowLeft')lenk(-1,0); if(e.key==='ArrowRight')lenk(1,0);
+});
+</script>
+</body>
+</html>
+```
+
+---
+
+## 9. Tier-Pflege (füttern & glücklich halten)
+
+Drei Balken (Hunger, Spaß, Energie) sinken langsam. Mit Knöpfen auffüllen. Bleibt alles im grünen
+Bereich, steigt die Glücks-Punktzahl. Ein leerer Balken macht das Tier traurig.
+
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>🐶 Tier-Pflege</title> <!-- ANPASSEN -->
+<style>
+  :root{ --bg:#ffe9c7; --akzent:#ff7eb6; } /* ANPASSEN */
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+  html,body{height:100%;font-family:system-ui,Arial,sans-serif;}
+  body{background:var(--bg);color:#5a3d2b;display:flex;flex-direction:column;align-items:center;
+       justify-content:center;min-height:100vh;gap:14px;padding:16px;}
+  #punkte{font-size:20px;font-weight:bold;}
+  #tier{font-size:120px;} #tier.happy{animation:hop .6s infinite;}
+  @keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  #balken{width:280px;display:flex;flex-direction:column;gap:10px;}
+  .reihe{display:flex;align-items:center;gap:8px;font-size:22px;}
+  .bar{flex:1;height:18px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.15);}
+  .fill{height:100%;width:100%;transition:width .3s;}
+  #knoepfe{display:flex;gap:12px;}
+  #knoepfe button{font-size:30px;padding:14px 20px;border:none;border-radius:16px;cursor:pointer;background:#fff;box-shadow:0 5px 0 rgba(0,0,0,.15);}
+  #knoepfe button:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.15);}
+  .schicht{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;text-align:center;background:rgba(0,0,0,.55);color:#fff;gap:18px;padding:24px;}
+  h1{font-size:40px;} p{font-size:22px;max-width:520px;line-height:1.4;}
+  .btn{font-size:26px;padding:16px 34px;border:none;border-radius:18px;cursor:pointer;
+       background:var(--akzent);color:#fff;font-weight:bold;box-shadow:0 6px 0 rgba(0,0,0,.25);}
+  .gross{font-size:72px;}
+</style>
+</head>
+<body>
+<div id="punkte">⭐ Glück: 0</div>
+<div id="tier">🐶</div> <!-- ANPASSEN: Tier -->
+<div id="balken">
+  <div class="reihe">🍖 <div class="bar"><div class="fill" id="hunger" style="background:#ff8a5c"></div></div></div>
+  <div class="reihe">🎾 <div class="bar"><div class="fill" id="spass" style="background:#5cc8ff"></div></div></div>
+  <div class="reihe">⚡ <div class="bar"><div class="fill" id="energie" style="background:#a0e85b"></div></div></div>
+</div>
+<div id="knoepfe">
+  <button onclick="fuettern()">🍖</button>
+  <button onclick="spielen()">🎾</button>
+  <button onclick="schlafen()">😴</button>
+</div>
+<div class="schicht" id="start">
+  <div class="gross">🐶</div><h1>Tier-Pflege</h1>
+  <p>Halte dein Tier glücklich! 🍖🎾😴<br>Füttern, spielen, schlafen — lass keinen Balken leer werden.</p>
+  <button class="btn" onclick="los()">▶ Start</button>
+</div>
+<div class="schicht" id="ende" style="display:none">
+  <div class="gross" id="endeEmoji">🎉</div><h1 id="endeTitel"></h1>
+  <p id="endeText"></p>
+  <button class="btn" onclick="los()">🔄 Nochmal</button>
+</div>
+<script>
+const tier=document.getElementById('tier');
+const ZIEL=20; // ANPASSEN: so viele Glücks-Punkte = gewonnen
+let hunger,spass,energie,glueck,laeuft=false,timer;
+function setze(){
+  document.getElementById('hunger').style.width=hunger+'%';
+  document.getElementById('spass').style.width=spass+'%';
+  document.getElementById('energie').style.width=energie+'%';
+  const schnitt=(hunger+spass+energie)/3;
+  tier.textContent = schnitt>66?'🐶':schnitt>33?'🙂':'😢'; // ANPASSEN: Tier-Emojis
+  tier.className = schnitt>66?'happy':'';
+}
+function los(){
+  document.getElementById('start').style.display='none';
+  document.getElementById('ende').style.display='none';
+  hunger=spass=energie=70; glueck=0; laeuft=true;
+  document.getElementById('punkte').textContent='⭐ Glück: 0'; setze();
+  clearInterval(timer); timer=setInterval(tick,1000);
+}
+function tick(){
+  if(!laeuft) return;
+  hunger=Math.max(0,hunger-6); spass=Math.max(0,spass-5); energie=Math.max(0,energie-4); // ANPASSEN: Abnahme
+  if(hunger>40&&spass>40&&energie>40){ glueck++; document.getElementById('punkte').textContent='⭐ Glück: '+glueck;
+    if(glueck>=ZIEL){ ende(true); return; } }
+  if(hunger===0||spass===0||energie===0){ ende(false); return; }
+  setze();
+}
+function fuettern(){ if(laeuft){ hunger=Math.min(100,hunger+25); setze(); } }
+function spielen(){ if(laeuft){ spass=Math.min(100,spass+25); energie=Math.max(0,energie-5); setze(); } }
+function schlafen(){ if(laeuft){ energie=Math.min(100,energie+30); setze(); } }
+function ende(gewonnen){
+  laeuft=false; clearInterval(timer);
+  document.getElementById('endeEmoji').textContent=gewonnen?'🏆':'😢';
+  document.getElementById('endeTitel').textContent=gewonnen?'Superglücklich!':'Oh nein!';
+  document.getElementById('endeText').textContent=gewonnen?'Dein Tier ist megaglücklich! Toll gepflegt!':'Dein Tier braucht mehr Pflege. Versuch es nochmal!';
+  document.getElementById('ende').style.display='flex';
+}
+</script>
+</body>
+</html>
+```
+
+---
+
+## 10. 3D-Sammelspiel (echtes 3D mit Three.js)
+
+Eine echte 3D-Welt: Die Figur läuft mit den Pfeiltasten herum und sammelt alle Sterne ein.
+**Braucht Internet** (lädt die 3D-Bibliothek). Tastatur-gesteuert — am besten am Computer.
+
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>🌟 3D-Sammeln</title> <!-- ANPASSEN -->
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+  html,body{height:100%;overflow:hidden;font-family:system-ui,Arial,sans-serif;}
+  #punkte{position:fixed;top:12px;left:16px;color:#fff;font-size:28px;font-weight:bold;text-shadow:0 2px 6px rgba(0,0,0,.6);z-index:5;}
+  .schicht{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;text-align:center;color:#fff;background:rgba(20,30,60,.7);gap:18px;padding:24px;z-index:10;}
+  h1{font-size:40px;} p{font-size:22px;max-width:560px;line-height:1.45;}
+  button{font-size:26px;padding:16px 34px;border:none;border-radius:18px;cursor:pointer;
+         background:#ffd23f;color:#222;font-weight:bold;box-shadow:0 6px 0 rgba(0,0,0,.25);}
+  .gross{font-size:72px;} canvas{display:block;}
+</style>
+</head>
+<body>
+<div id="punkte">🌟 0</div>
+<div class="schicht" id="start">
+  <div class="gross">🌟</div><h1>3D-Sammeln</h1>
+  <p>Lauf durch die 3D-Welt und sammle alle Sterne ein! 🌟<br>Bewege dich mit ← ↑ → ↓ (oder W A S D).</p>
+  <button onclick="los()">▶ Start</button>
+</div>
+<div class="schicht" id="ende" style="display:none">
+  <div class="gross">🏆</div><h1>Geschafft!</h1>
+  <p id="endeText"></p>
+  <button onclick="los()">🔄 Nochmal</button>
+</div>
+<!-- ANPASSEN: 3D-Bibliothek (braucht Internet). Stabile UMD-Version mit globalem THREE. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+let scene,camera,renderer,spieler,sterne=[],punkte,laeuft=false;
+const tasten={};
+const ANZAHL=8; // ANPASSEN: so viele Sterne zum Sammeln
+function init(){
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x87ceeb);        // ANPASSEN: Himmelfarbe
+  scene.fog=new THREE.Fog(0x87ceeb,20,60);
+  camera=new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 200);
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(innerWidth,innerHeight); document.body.appendChild(renderer.domElement);
+  scene.add(new THREE.AmbientLight(0xffffff,0.7));
+  const sonne=new THREE.DirectionalLight(0xffffff,0.7); sonne.position.set(10,20,10); scene.add(sonne);
+  const boden=new THREE.Mesh(new THREE.PlaneGeometry(80,80), new THREE.MeshStandardMaterial({color:0x6fcf5f})); // ANPASSEN: Boden
+  boden.rotation.x=-Math.PI/2; scene.add(boden);
+  spieler=new THREE.Mesh(new THREE.SphereGeometry(1,24,24), new THREE.MeshStandardMaterial({color:0xff5fa2})); // ANPASSEN: Figur
+  spieler.position.set(0,1,0); scene.add(spieler);
+  for(let i=0;i<14;i++){ const x=(Math.random()-0.5)*70, z=(Math.random()-0.5)*70; if(Math.abs(x)<6&&Math.abs(z)<6) continue;
+    const stamm=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,2), new THREE.MeshStandardMaterial({color:0x8b5a2b})); stamm.position.set(x,1,z); scene.add(stamm);
+    const krone=new THREE.Mesh(new THREE.ConeGeometry(1.6,3,8), new THREE.MeshStandardMaterial({color:0x2e8b57})); krone.position.set(x,3.2,z); scene.add(krone); }
+  addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+  animate();
+}
+function setzeSterne(){
+  sterne.forEach(s=>scene.remove(s)); sterne=[];
+  for(let i=0;i<ANZAHL;i++){
+    const s=new THREE.Mesh(new THREE.OctahedronGeometry(0.8), new THREE.MeshStandardMaterial({color:0xffd23f,emissive:0x665500}));
+    s.position.set((Math.random()-0.5)*60,1.2,(Math.random()-0.5)*60); scene.add(s); sterne.push(s);
+  }
+}
+function los(){
+  document.getElementById('start').style.display='none';
+  document.getElementById('ende').style.display='none';
+  spieler.position.set(0,1,0); punkte=0; document.getElementById('punkte').textContent='🌟 0';
+  setzeSterne(); laeuft=true;
+}
+function animate(){
+  requestAnimationFrame(animate);
+  if(laeuft){
+    const v=0.35;
+    if(tasten['ArrowUp']||tasten['w']) spieler.position.z-=v;
+    if(tasten['ArrowDown']||tasten['s']) spieler.position.z+=v;
+    if(tasten['ArrowLeft']||tasten['a']) spieler.position.x-=v;
+    if(tasten['ArrowRight']||tasten['d']) spieler.position.x+=v;
+    spieler.position.x=Math.max(-39,Math.min(39,spieler.position.x));
+    spieler.position.z=Math.max(-39,Math.min(39,spieler.position.z));
+    for(const s of sterne){ s.rotation.y+=0.05; s.rotation.x+=0.03;
+      if(s.position.distanceTo(spieler.position)<1.6){ scene.remove(s); sterne=sterne.filter(x=>x!==s);
+        punkte++; document.getElementById('punkte').textContent='🌟 '+punkte; if(sterne.length===0) gewonnen(); } }
+    camera.position.set(spieler.position.x, spieler.position.y+8, spieler.position.z+12);
+    camera.lookAt(spieler.position);
+  }
+  renderer.render(scene,camera);
+}
+function gewonnen(){ laeuft=false;
+  document.getElementById('endeText').textContent='Du hast alle Sterne gesammelt! Super!';
+  document.getElementById('ende').style.display='flex';
+}
+addEventListener('keydown',e=>{ tasten[e.key]=true; if(e.key.startsWith('Arrow'))e.preventDefault(); });
+addEventListener('keyup',e=>{ tasten[e.key]=false; });
+init();
 </script>
 </body>
 </html>
