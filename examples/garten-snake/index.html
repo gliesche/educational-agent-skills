@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>🐍 Garten-Snake</title>
+<style>
+  :root{ --bg:#10241a; --akzent:#ffd23f; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+  html,body{height:100%;font-family:system-ui,Arial,sans-serif;}
+  body{background:var(--bg);color:#fff;display:flex;flex-direction:column;align-items:center;
+       justify-content:center;min-height:100vh;gap:12px;}
+  #punkte{font-size:26px;font-weight:bold;}
+  canvas{background:#16341f;border-radius:10px;touch-action:none;}
+  #pad{display:grid;grid-template-columns:repeat(3,60px);gap:6px;margin-top:6px;}
+  #pad button{font-size:24px;padding:8px;border:none;border-radius:12px;background:var(--akzent);cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.3);}
+  #pad .leer{visibility:hidden;}
+  .schicht{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;text-align:center;background:rgba(0,0,0,.6);gap:18px;padding:24px;}
+  h1{font-size:40px;} p{font-size:22px;}
+  .btn{font-size:26px;padding:16px 34px;border:none;border-radius:18px;cursor:pointer;
+       background:var(--akzent);color:#222;font-weight:bold;box-shadow:0 6px 0 rgba(0,0,0,.25);}
+  .gross{font-size:72px;}
+</style>
+</head>
+<body>
+<div id="punkte">🍎 0</div>
+<canvas id="c" width="360" height="360"></canvas>
+<div id="pad">
+  <button class="leer"></button><button onclick="lenk(0,-1)">⬆️</button><button class="leer"></button>
+  <button onclick="lenk(-1,0)">⬅️</button><button class="leer"></button><button onclick="lenk(1,0)">➡️</button>
+  <button class="leer"></button><button onclick="lenk(0,1)">⬇️</button><button class="leer"></button>
+</div>
+<div class="schicht" id="start">
+  <div class="gross">🐍</div><h1>Garten-Snake</h1>
+  <p>Friss die Äpfel 🍎 und werde lang!<br>Steuere mit Pfeiltasten oder Knöpfen.<br>Beiß dich nicht selbst!</p>
+  <button class="btn" onclick="los()">▶ Start</button>
+</div>
+<div class="schicht" id="ende" style="display:none">
+  <div class="gross" id="endeEmoji">🎉</div><h1 id="endeTitel"></h1>
+  <p id="endeText"></p>
+  <button class="btn" onclick="los()">🔄 Nochmal</button>
+</div>
+<script>
+const c=document.getElementById('c'), ctx=c.getContext('2d');
+const N=18, ZELLE=c.width/N;
+const ZIEL=10;
+let schlange, dir, next, apfel, punkte, laeuft=false, tick;
+function los(){
+  document.getElementById('start').style.display='none';
+  document.getElementById('ende').style.display='none';
+  schlange=[{x:9,y:9},{x:8,y:9},{x:7,y:9}]; dir={x:1,y:0}; next=dir;
+  punkte=0; document.getElementById('punkte').textContent='🍎 0';
+  setzeApfel(); laeuft=true;
+  clearInterval(tick); tick=setInterval(schritt,160);
+  zeichne();
+}
+function setzeApfel(){ do{ apfel={x:Math.floor(Math.random()*N),y:Math.floor(Math.random()*N)}; }
+  while(schlange.some(s=>s.x===apfel.x&&s.y===apfel.y)); }
+function lenk(x,y){ if(!laeuft) return; if(x===-dir.x&&y===-dir.y) return; next={x,y}; }
+function schritt(){
+  dir=next;
+  const kopf={x:schlange[0].x+dir.x, y:schlange[0].y+dir.y};
+  if(kopf.x<0||kopf.x>=N||kopf.y<0||kopf.y>=N||schlange.some(s=>s.x===kopf.x&&s.y===kopf.y)){ ende(false); return; }
+  schlange.unshift(kopf);
+  if(kopf.x===apfel.x&&kopf.y===apfel.y){ punkte++; document.getElementById('punkte').textContent='🍎 '+punkte;
+    if(punkte>=ZIEL){ ende(true); return; } setzeApfel(); }
+  else schlange.pop();
+  zeichne();
+}
+function zeichne(){
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.font=ZELLE+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('🍎', apfel.x*ZELLE+ZELLE/2, apfel.y*ZELLE+ZELLE/2);
+  schlange.forEach((s,i)=>{ ctx.fillStyle=i===0?'#9be870':'#5fd36a'; ctx.fillRect(s.x*ZELLE+1,s.y*ZELLE+1,ZELLE-2,ZELLE-2); });
+}
+function ende(gewonnen){
+  laeuft=false; clearInterval(tick);
+  document.getElementById('endeEmoji').textContent=gewonnen?'🏆':'🐍';
+  document.getElementById('endeTitel').textContent=gewonnen?'Geschafft!':'Aua!';
+  document.getElementById('endeText').textContent=gewonnen?'Du hast es geschafft! Lange Schlange!':('Du hattest 🍎 '+punkte+'.');
+  document.getElementById('ende').style.display='flex';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowUp')lenk(0,-1); if(e.key==='ArrowDown')lenk(0,1);
+  if(e.key==='ArrowLeft')lenk(-1,0); if(e.key==='ArrowRight')lenk(1,0);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>🐶 Hund pflegen</title>
+<style>
+  :root{ --bg:#ffe9c7; --akzent:#ff7eb6; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+  html,body{height:100%;font-family:system-ui,Arial,sans-serif;}
+  body{background:var(--bg);color:#5a3d2b;display:flex;flex-direction:column;align-items:center;
+       justify-content:center;min-height:100vh;gap:14px;padding:16px;}
+  #punkte{font-size:20px;font-weight:bold;}
+  #tier{font-size:120px;} #tier.happy{animation:hop .6s infinite;}
+  @keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  #balken{width:280px;display:flex;flex-direction:column;gap:10px;}
+  .reihe{display:flex;align-items:center;gap:8px;font-size:22px;}
+  .bar{flex:1;height:18px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.15);}
+  .fill{height:100%;width:100%;transition:width .3s;}
+  #knoepfe{display:flex;gap:12px;}
+  #knoepfe button{font-size:30px;padding:14px 20px;border:none;border-radius:16px;cursor:pointer;background:#fff;box-shadow:0 5px 0 rgba(0,0,0,.15);}
+  #knoepfe button:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.15);}
+  .schicht{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;text-align:center;background:rgba(0,0,0,.55);color:#fff;gap:18px;padding:24px;}
+  h1{font-size:40px;} p{font-size:22px;max-width:520px;line-height:1.4;}
+  .btn{font-size:26px;padding:16px 34px;border:none;border-radius:18px;cursor:pointer;
+       background:var(--akzent);color:#fff;font-weight:bold;box-shadow:0 6px 0 rgba(0,0,0,.25);}
+  .gross{font-size:72px;}
+</style>
+</head>
+<body>
+<div id="punkte">⭐ Glück: 0</div>
+<div id="tier">🐶</div>
+<div id="balken">
+  <div class="reihe">🍖 <div class="bar"><div class="fill" id="hunger" style="background:#ff8a5c"></div></div></div>
+  <div class="reihe">🎾 <div class="bar"><div class="fill" id="spass" style="background:#5cc8ff"></div></div></div>
+  <div class="reihe">⚡ <div class="bar"><div class="fill" id="energie" style="background:#a0e85b"></div></div></div>
+</div>
+<div id="knoepfe">
+  <button onclick="fuettern()">🍖</button>
+  <button onclick="spielen()">🎾</button>
+  <button onclick="schlafen()">😴</button>
+</div>
+<div class="schicht" id="start">
+  <div class="gross">🐶</div><h1>Hund pflegen</h1>
+  <p>Halte deinen Hund glücklich! 🍖🎾😴<br>Füttern, spielen, schlafen — lass keinen Balken leer werden.</p>
+  <button class="btn" onclick="los()">▶ Start</button>
+</div>
+<div class="schicht" id="ende" style="display:none">
+  <div class="gross" id="endeEmoji">🎉</div><h1 id="endeTitel"></h1>
+  <p id="endeText"></p>
+  <button class="btn" onclick="los()">🔄 Nochmal</button>
+</div>
+<script>
+const tier=document.getElementById('tier');
+const ZIEL=20;
+let hunger,spass,energie,glueck,laeuft=false,timer;
+function setze(){
+  document.getElementById('hunger').style.width=hunger+'%';
+  document.getElementById('spass').style.width=spass+'%';
+  document.getElementById('energie').style.width=energie+'%';
+  const schnitt=(hunger+spass+energie)/3;
+  tier.textContent = schnitt>66?'🐶':schnitt>33?'🙂':'😢';
+  tier.className = schnitt>66?'happy':'';
+}
+function los(){
+  document.getElementById('start').style.display='none';
+  document.getElementById('ende').style.display='none';
+  hunger=spass=energie=70; glueck=0; laeuft=true;
+  document.getElementById('punkte').textContent='⭐ Glück: 0'; setze();
+  clearInterval(timer); timer=setInterval(tick,1000);
+}
+function tick(){
+  if(!laeuft) return;
+  hunger=Math.max(0,hunger-6); spass=Math.max(0,spass-5); energie=Math.max(0,energie-4);
+  if(hunger>40&&spass>40&&energie>40){ glueck++; document.getElementById('punkte').textContent='⭐ Glück: '+glueck;
+    if(glueck>=ZIEL){ ende(true); return; } }
+  if(hunger===0||spass===0||energie===0){ ende(false); return; }
+  setze();
+}
+function fuettern(){ if(laeuft){ hunger=Math.min(100,hunger+25); setze(); } }
+function spielen(){ if(laeuft){ spass=Math.min(100,spass+25); energie=Math.max(0,energie-5); setze(); } }
+function schlafen(){ if(laeuft){ energie=Math.min(100,energie+30); setze(); } }
+function ende(gewonnen){
+  laeuft=false; clearInterval(timer);
+  document.getElementById('endeEmoji').textContent=gewonnen?'🏆':'😢';
+  document.getElementById('endeTitel').textContent=gewonnen?'Superglücklich!':'Oh nein!';
+  document.getElementById('endeText').textContent=gewonnen?'Dein Hund ist megaglücklich! Toll gepflegt!':'Dein Hund braucht mehr Pflege. Versuch es nochmal!';
+  document.getElementById('ende').style.display='flex';
+}
+</script>
+</body>
+</html>

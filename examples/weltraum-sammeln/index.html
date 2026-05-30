@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>🚀 Weltraum-Sammeln</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+  html,body{height:100%;overflow:hidden;font-family:system-ui,Arial,sans-serif;}
+  #punkte{position:fixed;top:12px;left:16px;color:#fff;font-size:28px;font-weight:bold;text-shadow:0 2px 6px rgba(0,0,0,.7);z-index:5;}
+  .schicht{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;text-align:center;color:#fff;background:rgba(8,12,30,.78);gap:18px;padding:24px;z-index:10;}
+  h1{font-size:40px;} p{font-size:22px;max-width:560px;line-height:1.45;}
+  button{font-size:26px;padding:16px 34px;border:none;border-radius:18px;cursor:pointer;
+         background:#ffd23f;color:#222;font-weight:bold;box-shadow:0 6px 0 rgba(0,0,0,.25);}
+  .gross{font-size:72px;} canvas{display:block;}
+</style>
+</head>
+<body>
+<div id="punkte">🌟 0</div>
+<div class="schicht" id="start">
+  <div class="gross">🚀</div><h1>Weltraum-Sammeln</h1>
+  <p>Flieg durch den Weltraum und sammle alle Sterne ein! 🌟<br>Bewege dich mit ← ↑ → ↓ (oder W A S D).</p>
+  <button onclick="los()">▶ Start</button>
+</div>
+<div class="schicht" id="ende" style="display:none">
+  <div class="gross">🏆</div><h1>Geschafft!</h1>
+  <p id="endeText"></p>
+  <button onclick="los()">🔄 Nochmal</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+let scene,camera,renderer,spieler,sterne=[],punkte,laeuft=false;
+const tasten={};
+const ANZAHL=8;
+function init(){
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x0b1026);
+  scene.fog=new THREE.Fog(0x0b1026,20,60);
+  camera=new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 200);
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(innerWidth,innerHeight); document.body.appendChild(renderer.domElement);
+  scene.add(new THREE.AmbientLight(0xffffff,0.6));
+  const sonne=new THREE.DirectionalLight(0xffffff,0.8); sonne.position.set(10,20,10); scene.add(sonne);
+  const boden=new THREE.Mesh(new THREE.PlaneGeometry(80,80), new THREE.MeshStandardMaterial({color:0x2a2a3a}));
+  boden.rotation.x=-Math.PI/2; scene.add(boden);
+  spieler=new THREE.Mesh(new THREE.SphereGeometry(1,24,24), new THREE.MeshStandardMaterial({color:0x7fd4ff,emissive:0x123047}));
+  spieler.position.set(0,1,0); scene.add(spieler);
+  for(let i=0;i<16;i++){ const x=(Math.random()-0.5)*70, z=(Math.random()-0.5)*70; if(Math.abs(x)<6&&Math.abs(z)<6) continue;
+    const a=new THREE.Mesh(new THREE.IcosahedronGeometry(0.8+Math.random()*0.9),
+      new THREE.MeshStandardMaterial({color:0x8a8d9c,flatShading:true}));
+    a.position.set(x,1,z); a.rotation.set(Math.random()*3,Math.random()*3,0); scene.add(a); }
+  addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+  animate();
+}
+function setzeSterne(){
+  sterne.forEach(s=>scene.remove(s)); sterne=[];
+  for(let i=0;i<ANZAHL;i++){
+    const s=new THREE.Mesh(new THREE.OctahedronGeometry(0.8), new THREE.MeshStandardMaterial({color:0xffd23f,emissive:0x665500}));
+    s.position.set((Math.random()-0.5)*60,1.2,(Math.random()-0.5)*60); scene.add(s); sterne.push(s);
+  }
+}
+function los(){
+  document.getElementById('start').style.display='none';
+  document.getElementById('ende').style.display='none';
+  spieler.position.set(0,1,0); punkte=0; document.getElementById('punkte').textContent='🌟 0';
+  setzeSterne(); laeuft=true;
+}
+function animate(){
+  requestAnimationFrame(animate);
+  if(laeuft){
+    const v=0.35;
+    if(tasten['ArrowUp']||tasten['w']) spieler.position.z-=v;
+    if(tasten['ArrowDown']||tasten['s']) spieler.position.z+=v;
+    if(tasten['ArrowLeft']||tasten['a']) spieler.position.x-=v;
+    if(tasten['ArrowRight']||tasten['d']) spieler.position.x+=v;
+    spieler.position.x=Math.max(-39,Math.min(39,spieler.position.x));
+    spieler.position.z=Math.max(-39,Math.min(39,spieler.position.z));
+    for(const s of sterne){ s.rotation.y+=0.05; s.rotation.x+=0.03;
+      if(s.position.distanceTo(spieler.position)<1.6){ scene.remove(s); sterne=sterne.filter(x=>x!==s);
+        punkte++; document.getElementById('punkte').textContent='🌟 '+punkte; if(sterne.length===0) gewonnen(); } }
+    camera.position.set(spieler.position.x, spieler.position.y+8, spieler.position.z+12);
+    camera.lookAt(spieler.position);
+  }
+  renderer.render(scene,camera);
+}
+function gewonnen(){ laeuft=false;
+  document.getElementById('endeText').textContent='Du hast alle Sterne gesammelt! Super!';
+  document.getElementById('ende').style.display='flex';
+}
+addEventListener('keydown',e=>{ tasten[e.key]=true; if(e.key.startsWith('Arrow'))e.preventDefault(); });
+addEventListener('keyup',e=>{ tasten[e.key]=false; });
+init();
+</script>
+</body>
+</html>
