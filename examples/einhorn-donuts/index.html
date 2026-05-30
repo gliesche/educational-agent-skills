@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>🦄 Einhorn-Donuts</title>
+<style>
+  :root{ --akzent:#ff5fa2; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+  html,body{height:100%;font-family:system-ui,Arial,sans-serif;}
+  body{overflow:hidden;
+       background:linear-gradient(180deg,#ffd1f0 0%,#d4b3ff 35%,#b3e0ff 70%,#c7ffd8 100%);}
+  #spiel{position:relative;width:100vw;height:100vh;overflow:hidden;}
+  .ding{position:absolute;font-size:46px;will-change:transform;}
+  #held{position:absolute;bottom:10px;font-size:60px;}
+  #punkte{position:absolute;top:12px;left:16px;color:#7a2d6b;font-size:30px;font-weight:bold;
+          text-shadow:0 2px 6px rgba(255,255,255,.6);}
+  .schicht{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;text-align:center;color:#fff;background:rgba(122,45,107,.55);
+           gap:18px;padding:24px;}
+  h1{font-size:42px;text-shadow:0 3px 0 rgba(0,0,0,.2);} p{font-size:23px;max-width:600px;line-height:1.45;}
+  button{font-size:28px;padding:16px 38px;border:none;border-radius:20px;cursor:pointer;
+         background:var(--akzent);color:#fff;font-weight:bold;box-shadow:0 6px 0 rgba(0,0,0,.25);}
+  button:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25);}
+  .gross{font-size:80px;}
+</style>
+</head>
+<body>
+<div id="spiel">
+  <div id="punkte">🍩 0</div>
+  <div id="held">🦄</div>
+
+  <div class="schicht" id="start">
+    <div class="gross">🦄</div>
+    <h1>Einhorn-Donuts</h1>
+    <p>Fang die Donuts 🍩 mit dem Einhorn 🦄.<br>Pass auf die Regenwolken ⛈️ auf!<br>
+       Bewege dich mit den Pfeiltasten ← → oder mit der Maus.</p>
+    <button onclick="los()">▶ Start</button>
+  </div>
+
+  <div class="schicht" id="ende" style="display:none">
+    <div class="gross" id="endeEmoji">🎉</div>
+    <h1 id="endeTitel">Geschafft!</h1>
+    <p id="endeText"></p>
+    <button onclick="los()">🔄 Nochmal</button>
+  </div>
+</div>
+
+<script>
+const spiel=document.getElementById('spiel');
+const held=document.getElementById('held');
+const punkteEl=document.getElementById('punkte');
+const GUT='🍩', SCHLECHT='⛈️';
+const ZIEL=15;
+let tempo=2.2;
+let heldX, punkte, dinge, laeuft=false, timer;
+
+function los(){
+  document.getElementById('start').style.display='none';
+  document.getElementById('ende').style.display='none';
+  punkte=0; dinge=[]; tempo=2.2; laeuft=true;
+  punkteEl.textContent='🍩 0';
+  heldX=window.innerWidth/2; setzeHeld();
+  document.querySelectorAll('.ding').forEach(d=>d.remove());
+  clearInterval(timer); timer=setInterval(spawn,900);
+  loop();
+}
+function setzeHeld(){ held.style.left=(heldX-30)+'px'; }
+function spawn(){
+  if(!laeuft) return;
+  const d=document.createElement('div'); d.className='ding';
+  const schlecht=Math.random()<0.3;
+  d.textContent=schlecht?SCHLECHT:GUT;
+  d.dataset.bad=schlecht?'1':'0';
+  d.style.left=Math.random()*(window.innerWidth-46)+'px';
+  d.style.top='-50px'; spiel.appendChild(d); dinge.push(d);
+}
+function loop(){
+  if(!laeuft) return;
+  for(const d of dinge){
+    let y=parseFloat(d.style.top)+tempo; d.style.top=y+'px';
+    const dx=Math.abs((parseFloat(d.style.left)+23)-heldX);
+    if(y>window.innerHeight-95 && dx<52){
+      if(d.dataset.bad==='1'){ ende(false); return; }
+      punkte++; punkteEl.textContent='🍩 '+punkte; d.remove(); dinge=dinge.filter(x=>x!==d);
+      if(punkte>=ZIEL){ ende(true); return; }
+    } else if(y>window.innerHeight){ d.remove(); dinge=dinge.filter(x=>x!==d); }
+  }
+  requestAnimationFrame(loop);
+}
+function ende(gewonnen){
+  laeuft=false; clearInterval(timer);
+  document.getElementById('endeEmoji').textContent=gewonnen?'🎉':'⛈️';
+  document.getElementById('endeTitel').textContent=gewonnen?'Geschafft!':'Ups, nass!';
+  document.getElementById('endeText').textContent=
+    gewonnen?('Du hast 🍩 '+punkte+' gefangen! Super!'):('Eine Regenwolke! Du hattest 🍩 '+punkte+'.');
+  document.getElementById('ende').style.display='flex';
+}
+document.addEventListener('keydown',e=>{
+  if(!laeuft) return;
+  if(e.key==='ArrowLeft')  heldX=Math.max(30,heldX-40);
+  if(e.key==='ArrowRight') heldX=Math.min(window.innerWidth-30,heldX+40);
+  setzeHeld();
+});
+function folge(x){ if(laeuft){ heldX=Math.max(30,Math.min(window.innerWidth-30,x)); setzeHeld(); } }
+spiel.addEventListener('mousemove',e=>folge(e.clientX));
+spiel.addEventListener('touchmove',e=>{folge(e.touches[0].clientX);e.preventDefault();},{passive:false});
+</script>
+</body>
+</html>
