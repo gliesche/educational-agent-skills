@@ -36,6 +36,7 @@ Vier fertige Beispielspiele (inkl. echtem 3D) — ein Klick, kein Download.
 | Skill | Altersstufe | Was es tut |
 |---|---|---|
 | [`spiele-erfinden`](skills/spiele-erfinden/) | **≈6–12** (adaptiv, Kl. 1–6) | Begleitet Kinder Schritt für Schritt, ihr eigenes Browser-Spiel zu erfinden. **Passt sich dem Alter an** (Sprache, Leseaufwand, Schwierigkeit; bei Älteren optional ein Blick hinter die Kulissen = echtes Coding/Prompting). Klickbare Auswahl-Knöpfe statt Tippen, eine Frage nach der anderen. **10 Spiel-Typen** (Fangen, Hüpfen, Klicken, Labyrinth, Quiz, Memory, Renn-Spiel, Snake, Tier-Pflege) — sogar **echtes 3D** zum Herumlaufen. Kernidee: Kinder lernen das **Beschreiben (Prompten)**. |
+| [`geografie-entdecken`](skills/geografie-entdecken/) | **≈6–12** (adaptiv, kalibriert 3. Kl.) | Lässt Kinder **Deutschland entdecken** (Bundesländer, Hauptstädte, Flüsse, Nachbarländer, Meere) auf einer klickbaren Karte — und daraus ihr **eigenes Werk** bauen (eigenes Quiz, Steckbrief-Sammlung). Übt mit **echtem Abruf**, das Quiz **stupst statt zu lösen**, Feedback als „noch nicht". Lehrplan-Säule **Karten-Lesen** (Himmelsrichtungen) inklusive. Kernidee: **Das Kind erfindet sein Lern-Werkzeug, die KI baut.** |
 
 Die Sammlung ist über die Spalte **Altersstufe** nach Klassenstufe auffindbar. Jeder Skill ist
 intern alters-adaptiv, statt nach Klassen aufgeteilt zu sein — so bleiben die geteilten Bausteine

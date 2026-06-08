@@ -3,9 +3,11 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 Öffentliche Sammlung von **Agent Skills für den Bildungsbereich** (Schule/Kinder). Doku und
-Skill-Inhalte sind **auf Deutsch** (Zielgruppe: deutsche Kinder, Eltern, Lehrkräfte). Erster und
-bislang einziger Skill: `spiele-erfinden` — begleitet Kinder altersgerecht dabei, ihr eigenes
-Browser-Spiel zu erfinden (das Kind beschreibt, die KI baut).
+Skill-Inhalte sind **auf Deutsch** (Zielgruppe: deutsche Kinder, Eltern, Lehrkräfte). Aktuell zwei
+Skills: `spiele-erfinden` — begleitet Kinder altersgerecht dabei, ihr eigenes Browser-Spiel zu
+erfinden (das Kind beschreibt, die KI baut); und `geografie-entdecken` — lässt Kinder Deutschland
+auf einer klickbaren Karte entdecken und daraus ihr eigenes Quiz / ihre Steckbrief-Sammlung bauen
+(das Kind erfindet das Werk, die KI baut; das Quiz stupst statt zu lösen).
 
 ## ⚠️ Wichtigste Regel: Dual-Location-Sync
 
@@ -68,6 +70,12 @@ await p.waitForTimeout(800);console.log(errs.length?errs:"ok");await b.close();}
 Prüfen: keine `pageerror`/Console-Errors, Start-Knopf führt ins Spiel, Gewinn-/Verlier-Zustand
 erreichbar. Bei `spiele-erfinden` zusätzlich darauf achten, dass deutsche Texte korrekt sind
 (z.B. Anzahlen als Emoji-Zähler `'🍩 '+n` statt `n+' Donuts'`, um Ein-/Mehrzahl-Fehler zu vermeiden).
+
+Bei `geografie-entdecken` (`references/karten-vorlage.md`) zusätzlich: Karte rendert 16
+Bundesländer, Klick zeigt die **korrekte** Hauptstadt (Stichprobe Bayern→München, NRW→Düsseldorf),
+der Üben-Modus ist **sichtbar** (nicht nur im DOM — `getComputedStyle(...).display` prüfen, nicht
+nur `textContent`!) und antwortbar, der Fehler-Pfad sagt „noch nicht" + Hinweis statt „falsch".
+Fakten in `REGIONS` nicht ändern — sie sind fakten-geprüft.
 
 ## Packaging für die Claude Desktop App / claude.ai
 
