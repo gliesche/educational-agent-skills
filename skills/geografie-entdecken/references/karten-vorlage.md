@@ -47,13 +47,30 @@ SVG + `REGIONS` tauschen, Engine bleibt.
   .land { fill: var(--land); stroke: #fff; stroke-width: 1.2; cursor: pointer;
     fill-rule: evenodd; transition: fill 0.15s; }
   .land:hover { fill: var(--land-hover); }
-  .land.active { fill: var(--land-active); }
   .land.discovered { fill: var(--land-done); }
+  .land.active { fill: var(--land-active); }
   .land:focus { outline: none; }
   .land:focus-visible { stroke: var(--accent); stroke-width: 3; }
   #panel { min-height: 4.5rem; margin: 1rem auto 0; max-width: 30rem; font-size: 1.15rem;
     background: #fff; border-radius: 14px; padding: 0.8rem 1rem; box-shadow: 0 2px 8px #0001; }
   #panel .cap { color: var(--accent); font-weight: 700; }
+  #panel .anchor { font-size: 0.95rem; color: #6b6256; margin-top: 0.3rem; }
+  #map-wrap { position: relative; }
+  #compass { position: absolute; top: 6px; right: 6px; width: 54px; height: 54px;
+    border-radius: 50%; background: #ffffffcc; border: 2px solid #d8cdbd; }
+  #compass .dir { position: absolute; font-size: 0.8rem; font-weight: 700; color: var(--ink);
+    transform: translate(-50%, -50%); }
+  #compass .dir-n { left: 50%; top: 24%; color: var(--accent); }
+  #compass .dir-s { left: 50%; top: 76%; }
+  #compass .dir-o { left: 76%; top: 50%; }
+  #compass .dir-w { left: 24%; top: 50%; }
+  #legend { display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center;
+    margin: 0.6rem auto 0; max-width: 30rem; font-size: 0.85rem; color: #6b6256; }
+  #legend .li { display: inline-flex; align-items: center; gap: 0.3rem; }
+  #legend .dot { width: 12px; height: 12px; border-radius: 50%; background: #c0392b; display: inline-block; }
+  .sea-label { fill: #5a9bd4; font-size: 40px; font-weight: 600; font-style: italic; }
+  .neighbor-label { fill: #a89a86; font-size: 30px; }
+  #capital-dot { fill: #c0392b; stroke: #fff; stroke-width: 2.5; }
 </style>
 </head>
 <body>
@@ -69,7 +86,11 @@ SVG + `REGIONS` tauschen, Engine bleibt.
       <button class="mode-btn" data-mode="ueben" aria-pressed="false">✏️ Üben</button>
     </div>
     <div id="map-wrap">
-      <svg id="map" viewBox="0 0 760 1030" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Karte von Deutschland">
+      <svg id="map" viewBox="-210 -90 1230 1260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Karte von Deutschland">
+        <g id="sea-layer" aria-hidden="true">
+          <text class="sea-label" x="150" y="-20" text-anchor="middle">Nordsee</text>
+          <text class="sea-label" x="560" y="-20" text-anchor="middle">Ostsee</text>
+        </g>
         <path id="r-bw" class="land" data-key="bw" data-name="Baden-Württemberg" d="M313.3,698.1L312.2,709.5L315.1,710.4L318.7,705L320.3,710.4L325.4,704.9L328.8,708.3L328.4,714.7L332.4,721L327.8,727.9L331.2,729.4L335.8,723.9L334.4,727.4L336.8,727.3L337.5,737.6L344.1,737.5L348.2,729.1L349.7,734L353,733.9L350.8,742.2L356.6,749L351.9,751L353.4,754.9L351.5,756.4L354.9,757.8L355.8,763.8L352.2,767L354.1,767.5L353.2,774.3L364.2,781.9L360,787.8L363.8,788.7L363.9,795.5L372.5,796.8L381,808.9L378.7,812.8L381,814.8L378.6,820.6L380.5,825.5L377.2,830.3L384.2,841.7L377.2,845L379.5,840.6L376.7,840.1L372,845.9L371.1,841L365.4,839L364,844.4L369.7,851.7L367.3,852.2L368.7,862.9L361.7,864.3L362.6,866.7L357,871.3L345.4,871.7L345.9,875.6L339.9,882.2L348,895.2L349.4,908.5L354.1,919.3L353.7,930.1L349.2,938.1L351.5,941L351.1,948.5L348.8,950L353.4,956.8L347.9,960.9L352,964.3L352.9,975.7L349.3,975.8L348.3,980.8L344.3,973.8L339.3,978.7L329.4,975.4L321.3,984.9L306.4,987.6L300.8,978.9L285.5,975.7L263,956.3L274.1,967.6L277.7,976.8L273,978.8L258.7,966.3L260.2,968.6L254.5,968.4L259.9,973.3L250.4,978.5L247.3,974.8L248.9,971.6L243.5,967.1L240.4,970L242.6,975.3L236.8,973L237,963.9L233.7,964.3L230.9,958.6L228.7,963.9L227.9,958.9L223.6,957.5L224.2,960.8L215.7,963.4L210,975.3L215.6,980.1L226.3,975.7L228.6,979.1L226,979.6L224.9,985.8L219.7,980.8L214.5,985.1L217.6,987.8L212.7,989.6L203.8,989.2L200.6,984L193.4,982.4L183.7,990.7L171.8,992.5L167.4,986.7L161.6,986.5L149.1,994.2L146,990.8L149.9,989.7L149.2,986.7L143.9,988.4L137.1,977.9L139.8,948.7L145.1,936.4L140.7,928.2L141.5,916.9L148.8,903.7L151.1,893L155.3,889.4L154.4,880.2L160.3,865.1L160.3,854.5L174,833L183.7,826.9L192.8,806.4L200.9,800.2L206.5,787.6L208.6,769.7L217.2,760.9L213.8,756.7L217.5,753.1L217.8,748.7L215,748.9L218.6,742.4L213.4,741.2L215.2,738.2L211.2,727.7L212,723.3L225.5,731.3L228.3,727.8L226.2,719.7L234.3,717.8L233,724.2L236.9,731.7L251.3,733.1L249.4,738L245.1,737.7L246.1,742.4L242.8,745.4L247.6,747.2L255.7,739.8L255.6,733L270.4,731.9L267,728.5L268.4,723.7L280.8,723.2L285.5,713.9L294,715.4L294.8,706.6L292.4,704.2L289.6,707.6L291.5,704.7L284.8,703.2L287.2,702.7L286.2,699.3L301.7,696.8L306.9,702.6L306.8,697.7L313.3,698.1ZM235.2,970.6L236.4,973.1L231.3,973.3L235.2,970.6Z"/>
         <path id="r-by" class="land" data-key="by" data-name="Bayern" d="M353.4,595.8L359.2,595.3L361.7,600.7L370,603.2L375.9,612.6L374.9,616.5L380.3,615.5L383.2,621.9L392.5,624.9L393,638.7L402.2,642.1L403.2,635.7L413.2,635.6L401.8,625.8L402.2,620.9L411.2,617L420.3,616.9L425.1,623.3L425,620.3L428.9,623.3L434.6,620.3L438.4,625.2L437,630.6L446.1,633.5L448.6,620.2L445.8,605.5L452.1,604L454.1,599.5L460.9,600.5L459.8,608.8L462.2,612.8L465.1,611.3L468.5,619.1L474.4,615.2L490.5,612.7L493.8,616.6L503.1,612.1L506.8,616.5L506.6,621.9L518.5,627.1L519.5,631.2L515.2,634.8L524.6,642.7L524.6,653.7L529.8,656.4L529.3,660.3L548.7,670.3L547.5,676.5L553.5,678.2L549.7,689.8L547.3,690.2L547.2,696.3L541.5,700.9L544.9,707.3L551.9,709.8L551.7,717.1L554.9,718.2L556.9,728.8L561.7,730.5L560.6,737.3L562.9,743.6L571.1,747.8L573.1,754.2L587.1,754.7L593.8,759.9L594.2,765.3L606,777.7L606,781.6L615.6,784.9L624.5,793.9L626.2,804.5L632.2,808.7L633.3,804.9L639.8,804.9L646.7,816.2L653.3,817.3L660.3,831L656.3,837.6L659.5,848.2L658.2,854.8L652.4,863L632.7,854.1L627.1,858.3L628.7,864.7L625.1,883L614.7,892.6L598.5,895.7L580.1,906L570.5,917.4L591.1,952.5L583.7,968.5L592.3,968.7L597.8,973.8L599.8,980.7L595,987.9L595.5,999.7L592.1,1003.6L588.5,1002.1L574.4,990.9L572.9,988.3L576.6,983.7L572,979.9L573,975.8L558.3,975.4L556,981.3L550.1,982L544.3,972.5L529.6,975.8L529.2,967.3L522.6,972.8L525.5,985.7L509.5,983L496.2,988.6L478,986.1L473.4,997.5L461.5,997.3L457.4,1002.8L460.4,1006.3L453.5,1005.4L447.9,1013.5L443.8,1013.4L445.6,1007.7L423.3,1012.8L419.1,1002L413.8,1002L418.4,996.9L415.5,994L406.3,996.9L392,989.3L388.8,994.3L378.1,987.8L378.2,999.4L380.7,1000.8L381.4,1007.9L378.2,1015.1L374.6,1015.5L369.1,1025.2L356.4,1029.5L361.1,1013.2L350.2,1018.3L348,1010.7L350.1,1009.8L349.8,1004.8L342.1,1000.9L339.9,992.4L331.8,995L326.8,992.4L325.8,986.2L320.4,993.6L310.5,989.2L314,984.1L322.2,984.3L329.4,975.4L339.3,978.7L344.3,973.8L348.3,980.8L349.3,975.8L352.9,975.7L352,964.3L347.9,960.9L353.4,956.8L348.8,950L351.1,948.5L351.5,941L349.2,938.1L353.7,930.1L354.1,919.3L349.4,908.5L348,895.2L339.9,882.2L345.9,875.6L345.4,871.7L357,871.3L362.6,866.7L361.7,864.3L368.7,862.9L367.3,852.2L369.7,851.7L364,844.4L365.4,839L371.1,841L372,845.9L376.7,840.1L379.5,840.6L377.2,845L384.2,841.7L377.2,830.3L380.5,825.5L378.6,820.6L381,814.8L378.7,812.8L381,808.9L372.5,796.8L363.9,795.5L363.8,788.7L360,787.8L364.2,781.9L353.2,774.3L354.1,767.5L352.2,767L355.8,763.8L354.9,757.8L351.5,756.4L353.4,754.9L351.9,751L356.6,749L350.8,742.2L353,733.9L349.7,734L348.2,729.1L344.1,737.5L338.9,738L336,736.1L335.8,723.9L331.2,729.4L327.8,727.9L332.4,720.5L326.3,704.9L320.8,710.4L318.7,705L314.1,710.4L311.7,708.5L313.7,696.6L306.8,697.7L306.9,702.6L301.7,696.8L290.9,697.8L284.8,703.2L291.5,704.7L288.7,705.6L290.6,708.1L293.4,704.7L295.3,709.1L294,715.4L285.5,713.9L278.9,724.2L269.9,724.6L265.5,720.8L268.8,715.4L267.3,709.1L272.9,702.2L269.1,700.3L271.4,695.4L268.1,695.9L268,689.1L263.2,688.7L262,669.8L264.9,669.2L263.4,662.9L259,661.6L262.2,653.7L270.8,652L273.7,652.9L273.4,656.8L279.1,648.8L290.7,651.1L294.1,657.9L302.4,656.3L303.5,646.4L301.2,645.4L300.8,636.6L314.1,637.9L312.2,635.9L313.5,632.9L321.1,627.4L321.3,613.5L332.6,615.8L338.9,612.8L348.5,596.8L353.4,595.8Z"/>
         <path id="r-be" class="land" data-key="be" data-name="Berlin" d="M604.4,325.5L608.9,327.1L610.1,321.2L613.6,321.8L614.8,317.4L621.7,322L630.4,318.3L628.9,316.8L631,314.9L634.9,319.4L633.7,326.2L646.1,334.3L642.3,342.1L654.7,346.3L645.8,359.3L645,354.4L631.5,352.1L630.6,348.7L626.5,350L626.9,354.5L611.9,348.7L602.7,352.9L598.8,348.9L605.7,337.3L601.2,335.2L604.4,325.5Z"/>
@@ -86,6 +107,18 @@ SVG + `REGIONS` tauschen, Engine bleibt.
         <path id="r-sn" class="land" data-key="sn" data-name="Sachsen" d="M580.9,447.4L587.3,451.9L592.4,448.1L599.2,456.1L605.1,457.2L604.5,462.1L609.8,467.1L607,479.7L609.5,479.3L610.4,483.7L614.8,485.3L619,478.1L623.9,480.2L626,476.3L637.5,487.4L655.6,488.5L671.6,483.6L675.2,486.8L680.6,477.1L678.1,472.8L682.8,472.8L681.5,470.7L686.7,464.3L702.3,470.1L721.2,460.6L729.1,463.5L731.2,457.1L735.2,467L749.4,471.1L753.8,476.4L754.2,489.5L759.2,495.4L760,504.6L751,537.5L741.9,550.6L740.7,558.9L724.7,555.5L728,545.2L720.4,546.4L723.3,537.8L715.6,534.1L715.5,529.5L714.6,533.6L706.9,535.2L698.3,529.2L694.4,539.9L707.2,543.9L704.8,551.1L695,551.3L678.8,562.7L670.2,562.3L665.3,564.9L665.5,570.3L661.6,573.6L636.5,574.2L634.6,584.5L629.6,589.7L622.1,583.4L618.1,591.6L611.6,590.2L607.3,602.3L593.8,601.3L593.4,609.1L589.1,613.8L576.8,607.9L566.6,615.9L559.1,613.1L550.9,615.6L549,622.4L538.3,632L535.3,644.8L531.5,644.4L531.7,638.5L527.5,635L529.1,632.1L524.3,631.6L524.2,625.8L518,627.2L506.1,621.5L506.8,616.5L499.3,609.7L504.6,608.1L505.7,603.7L498.1,596.4L509.6,584L511.3,594.8L521.8,591.8L521,585L531.4,584L536.1,577.6L528.2,569.8L533.2,565L529.8,559.6L545.5,556.6L549.1,549.9L563.4,545.9L559.6,536.1L552.8,535.9L553.8,532.5L551.3,533.4L550.9,527.6L547,524.6L527.3,521.3L528.9,518.9L525.4,517.3L526.5,512L523.5,512L526,507.6L521.3,493.9L524.8,492.5L524.9,480.4L521,474.9L525.5,472.1L524.6,467.2L528.7,461.4L580.9,447.4Z"/>
         <path id="r-sh" class="land" data-key="sh" data-name="Schleswig-Holstein" d="M431,69L444.6,72.7L451.2,86.5L435,86.5L433.1,80.8L426,81.3L426.6,74.3L431,69ZM210.2,1.7L213.2,5.4L205.8,11.8L206.9,20.4L212.1,23.7L243.8,18.5L278,26.5L282.8,33.6L293.3,28.5L295.5,35.4L310.3,23.9L309.4,29.7L325,34.3L329.3,39.7L334.5,38.7L334.6,34.3L338.6,36.5L345.2,50.8L340.9,47L337.2,50.7L336.7,56.7L323.2,62.9L319.1,69.8L321.4,67.4L337.2,57.3L338,50.6L345.1,51.1L344.6,66.9L329,77.9L331.4,80.5L352.9,75.5L358.8,79.4L356.3,82.3L358.2,88.1L354.6,90.9L353.2,98.5L357.6,96.3L357,92L361.2,85L368.7,82.1L392.3,91.7L400.7,99.4L407.7,98.5L419.3,89.2L435.8,88L430.1,92.8L433,113.5L415.2,128L409,127L404.5,133.2L407.5,140.1L415.1,141.5L415.9,149.8L422.2,151.5L417,152.7L414.9,149.2L406,155.4L404,160.8L405.1,172.5L420.8,182.3L418.8,194.5L410.6,195.2L410.6,203.5L395.3,210.4L393.8,220.1L390.3,223L368.8,213.4L370.2,211L356.2,201.3L355.5,194L359.7,193.5L358.6,189.6L361.2,188.1L354.1,180.8L358.8,175.4L357.1,173L349.3,175.5L348.3,180.8L342.5,180.4L341.5,184.8L334.6,184.3L327.8,193.2L322.4,187.4L319.4,196.7L315.2,195.8L304.7,189.4L301.4,179.2L283.3,157L255.3,152.6L244.4,136.5L256.4,135L258.2,131.6L253.4,122.3L247.7,123.5L243.4,116.5L245.8,106.4L251.3,105.3L255.4,98.3L247.9,104.2L246.4,101.5L246.6,104.9L244.7,101.1L230,103.6L224.5,98.8L226.6,92.3L233.3,92.5L227,88.6L248.3,86.2L261.3,77.1L257.8,70.8L251.8,78.6L243.3,77.5L243.2,73.9L248.8,69.9L250.3,61.3L243.9,60.7L246.3,58.4L244.7,54.3L233.5,43.2L233.9,37.9L225.4,22.7L211,27.7L202.2,24.1L204,25.6L201.4,27.2L201.2,41.6L199.7,40.3L201.2,19.5L210.2,1.7ZM318,71L304.6,72.3L307,76.9L311.1,72.1L318.6,74.7L317.4,71.6L318,71ZM210.6,0.9L211.1,0L214.9,1.4L210.6,0.9ZM233.8,66L232.2,74.3L225.3,72L233.8,66ZM221.2,39.8L225.8,44.5L223.5,49.8L209.4,46.4L211.4,41.4L221.2,39.8ZM222.2,63.1L224,65.8L218.7,63.8L222.2,63.1ZM216,76.7L220.1,82.4L215.5,83.9L213.8,79.8L216,76.7ZM216.1,67.5L218.3,69.5L215.6,74.1L216.1,67.5ZM216.5,62.4L218,65.9L214.2,65.8L216.5,62.4ZM206.1,45.6L204.6,48.6L209.2,58.8L200.7,51.5L206.1,45.6Z"/>
         <path id="r-th" class="land" data-key="th" data-name="Thüringen" d="M406.3,451.1L420.2,456.1L415.7,459.5L421.1,465.4L420.1,470.4L423.1,472.8L422.6,479.2L426,479.7L424.6,481.2L452.2,482L458.2,485.5L458.6,490.9L465,496.8L455.5,507.1L464.4,511L465.9,514.4L462.9,517.4L465.8,522.8L480.7,521.3L488.5,530.6L498.5,528.2L507.3,534.1L506.3,536.5L509.7,540L524.1,538.7L527,543.6L533.6,533L529.7,530.5L532.7,523.8L547,524.6L550.9,527.6L551.3,533.4L553.8,532.5L552.8,535.9L559.6,536.1L563.3,546.4L549.1,549.9L545.5,556.6L529.8,559.6L533.2,565L528.2,569.8L531.2,569.8L531.1,575.6L535.5,579.5L531.4,584L525.5,583L524.9,586.4L521.5,584.5L520.3,590.9L522.3,591.4L513.3,594.8L510.4,593.4L510.6,585L507.1,585.5L502.5,594.4L498.1,596.4L505.7,604.2L503.8,604.7L504.6,608.1L499.3,609.7L502.6,611.6L497.2,615.1L493.3,616.6L490,612.7L468.5,619.1L465.1,611.3L462.2,612.8L459.8,608.8L460.9,600.5L454.1,599.5L452.1,604L445.8,605.5L448.6,620.2L446.1,633.5L437,630.6L438.4,625.2L434.6,620.3L428.9,623.3L425,620.3L425.1,623.3L420.3,616.9L415,616.5L401.7,621.9L402.7,626.8L412.7,632.7L412.7,636.6L403.2,635.7L402.7,642.1L393.5,639.2L392.5,624.9L383.2,621.9L380.3,615.5L374.9,616.5L375.9,612.6L370,603.2L352.9,593.8L345.6,600.3L347.5,594.8L345.5,587.4L349.4,586.4L346.3,579L338.3,579.8L337.8,585.2L331.8,583.7L337.2,571L335.7,567.6L338.7,565.2L338.2,559.8L344.1,558.4L344.1,553.9L347.5,551.5L343.5,546.6L340.5,548.5L341.5,544.6L338,546.1L338,543.1L347.9,543.2L343.9,538.7L345.8,534.3L359.2,535.9L359.1,530.5L354.7,529L357.1,520.7L352.6,517.7L356.6,516.3L360,520.7L361.9,512.4L348.6,506.4L347,499.5L340.1,498.5L336.1,487.2L346.8,478.4L355.7,479.5L354.2,478L358.6,472.6L367.4,471.2L372.8,465.4L373.7,459L396.9,463.2L395.3,454.4L406.3,451.1Z"/>
+        <g id="neighbor-layer" aria-hidden="true">
+          <text class="neighbor-label" x="320" y="-48" text-anchor="middle">Dänemark</text>
+          <text class="neighbor-label" x="775" y="360" text-anchor="start">Polen</text>
+          <text class="neighbor-label" x="785" y="650" text-anchor="start">Tschechien</text>
+          <text class="neighbor-label" x="540" y="1118" text-anchor="middle">Österreich</text>
+          <text class="neighbor-label" x="200" y="1118" text-anchor="middle">Schweiz</text>
+          <text class="neighbor-label" x="-15" y="700" text-anchor="end">Frankreich</text>
+          <text class="neighbor-label" x="5" y="545" text-anchor="end">Luxemburg</text>
+          <text class="neighbor-label" x="-15" y="430" text-anchor="end">Belgien</text>
+          <text class="neighbor-label" x="-15" y="300" text-anchor="end">Niederlande</text>
+        </g>
+        <circle id="capital-dot" r="16" style="display:none"></circle>
       </svg>
     </div>
     <div id="panel">Klick auf ein Bundesland! 🐾</div>
@@ -136,7 +169,11 @@ function startGame() {
   if (CONFIG.childName) $("#title").textContent = CONFIG.childName + "s Deutschland-Reise 🗺️";
   $("#start").style.display = "none";
   $("#game").style.display = "block";
+  renderCompass();
+  renderLegend();
+  applyTopics();
   setMode("entdecken");
+  highlightHome();
 }
 
 function setMode(mode) {
@@ -152,13 +189,108 @@ function markActive(key) {
 }
 
 function onRegionClick(key) {
-  // wird in Entdecken/Üben erweitert; Basis: Land hervorheben
+  if (state.mode === "ueben") { checkAnswer(key); return; }
   markActive(key);
-  const r = regionByKey(key);
-  if (r && state.mode === "entdecken") {
-    $("#panel").textContent = CONFIG.mascot + " " + r.name;
-  }
+  showInfo(key);
+  markDiscovered(key);
 }
+
+// --- Entdecken ---
+function showInfo(key) {
+  const r = regionByKey(key); if (!r) return;
+  const panel = $("#panel");
+  panel.replaceChildren();
+  const name = document.createElement("strong");
+  name.textContent = CONFIG.mascot + " " + r.name;
+  panel.appendChild(name);
+  if (CONFIG.topics.capitals) {
+    const cap = document.createElement("div");
+    cap.append("Hauptstadt: ");
+    const capName = document.createElement("span");
+    capName.className = "cap";
+    capName.textContent = r.capital;
+    cap.appendChild(capName);
+    if (r.isCityState) cap.append(" (Stadtstaat)");
+    panel.appendChild(cap);
+  }
+  if (CONFIG.topics.rivers && r.rivers.length) {
+    const riv = document.createElement("div");
+    riv.textContent = "Flüsse: " + r.rivers.join(", ");
+    panel.appendChild(riv);
+  }
+  const an = document.createElement("div");
+  an.className = "anchor";
+  an.textContent = r.anchor;
+  panel.appendChild(an);
+  placeCapitalDot(r);
+}
+
+function placeCapitalDot(r) {
+  const el = document.getElementById(r.svgId);
+  const dot = $("#capital-dot");
+  if (!el || !dot) return;
+  if (!CONFIG.topics.capitals) { dot.style.display = "none"; return; }
+  const bb = el.getBBox();
+  dot.setAttribute("cx", (bb.x + bb.width / 2).toFixed(1));
+  dot.setAttribute("cy", (bb.y + bb.height / 2).toFixed(1));
+  dot.style.display = "";
+}
+
+function markDiscovered(key) {
+  const r = regionByKey(key); if (!r) return;
+  state.discovered.add(key);
+  const el = document.getElementById(r.svgId);
+  if (el) el.classList.add("discovered");
+}
+
+// --- Karten-Lesen: Kompass + Legende ---
+function renderCompass() {
+  if ($("#compass")) return;
+  const c = document.createElement("div");
+  c.id = "compass";
+  c.setAttribute("aria-label", "Himmelsrichtungen: oben ist Norden");
+  for (const [dir, cls] of [["N", "n"], ["O", "o"], ["S", "s"], ["W", "w"]]) {
+    const s = document.createElement("span");
+    s.className = "dir dir-" + cls;
+    s.textContent = dir;
+    c.appendChild(s);
+  }
+  $("#map-wrap").appendChild(c);
+}
+
+function renderLegend() {
+  if ($("#legend")) return;
+  const l = document.createElement("div");
+  l.id = "legend";
+  const item = (symbol, text) => {
+    const li = document.createElement("span");
+    li.className = "li";
+    li.appendChild(symbol);
+    const t = document.createElement("span");
+    t.textContent = text;
+    li.appendChild(t);
+    return li;
+  };
+  const dot = document.createElement("span"); dot.className = "dot";
+  l.appendChild(item(dot, "Hauptstadt"));
+  const wave = document.createElement("span"); wave.textContent = "≈"; wave.style.color = "#5a9bd4"; wave.style.fontWeight = "700";
+  l.appendChild(item(wave, "Meer (Nordsee, Ostsee)"));
+  $("#game").appendChild(l);
+}
+
+function applyTopics() {
+  const nl = $("#neighbor-layer");
+  if (nl) nl.style.display = CONFIG.topics.neighbors ? "" : "none";
+}
+
+function highlightHome() {
+  if (CONFIG.homeKey && regionByKey(CONFIG.homeKey)) onRegionClick(CONFIG.homeKey);
+}
+
+// --- Üben (in Task 3 implementiert) ---
+function buildQuizQueue() {}
+function nextQuestion() {}
+function checkAnswer(key) {}
 
 // Klick + Tastatur (Delegation, damit dispatchEvent-Klicks funktionieren)
 function wireMap() {
