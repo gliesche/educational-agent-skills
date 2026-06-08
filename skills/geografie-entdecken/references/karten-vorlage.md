@@ -71,6 +71,17 @@ SVG + `REGIONS` tauschen, Engine bleibt.
   .sea-label { fill: #5a9bd4; font-size: 40px; font-weight: 600; font-style: italic; }
   .neighbor-label { fill: #a89a86; font-size: 30px; }
   #capital-dot { fill: #c0392b; stroke: #fff; stroke-width: 2.5; }
+  #quiz { display: none; max-width: 30rem; margin: 1rem auto 0;
+    background: #fff; border-radius: 14px; padding: 0.9rem 1rem; box-shadow: 0 2px 8px #0001; }
+  #question { font-size: 1.2rem; font-weight: 600; min-height: 2.4rem; }
+  #choices { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin: 0.7rem 0; }
+  .choice-btn { font-size: 1.05rem; padding: 0.6rem 1.1rem; border: 2px solid var(--accent);
+    border-radius: 12px; background: #fff; color: var(--ink); cursor: pointer; }
+  .choice-btn:hover { background: #fde8dd; }
+  #feedback { font-size: 1.1rem; min-height: 1.6rem; font-weight: 600; }
+  #hint { font-size: 0.95rem; color: #6b6256; min-height: 1.2rem; }
+  .land.hint { fill: var(--land-active); animation: pulse 0.8s ease-in-out 3; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
 </style>
 </head>
 <body>
@@ -122,6 +133,12 @@ SVG + `REGIONS` tauschen, Engine bleibt.
       </svg>
     </div>
     <div id="panel">Klick auf ein Bundesland! 🐾</div>
+    <div id="quiz">
+      <div id="question"></div>
+      <div id="choices"></div>
+      <div id="feedback" aria-live="polite"></div>
+      <div id="hint" aria-live="polite"></div>
+    </div>
   </section>
 
 <script>
@@ -180,6 +197,12 @@ function setMode(mode) {
   state.mode = mode;
   document.querySelectorAll(".mode-btn").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+  const ueben = mode === "ueben";
+  $("#panel").style.display = ueben ? "none" : "";
+  const lg = $("#legend"); if (lg) lg.style.display = ueben ? "none" : "";
+  $("#quiz").style.display = ueben ? "block" : "none";
+  document.querySelectorAll(".land.active, .land.hint").forEach(el => el.classList.remove("active", "hint"));
+  if (ueben) { buildQuizQueue(); nextQuestion(); }
 }
 
 function markActive(key) {
@@ -189,7 +212,10 @@ function markActive(key) {
 }
 
 function onRegionClick(key) {
-  if (state.mode === "ueben") { checkAnswer(key); return; }
+  if (state.mode === "ueben") {
+    if (state.current && state.current.type === "locate") checkAnswer(key);
+    return;
+  }
   markActive(key);
   showInfo(key);
   markDiscovered(key);
@@ -287,10 +313,117 @@ function highlightHome() {
   if (CONFIG.homeKey && regionByKey(CONFIG.homeKey)) onRegionClick(CONFIG.homeKey);
 }
 
-// --- Üben (in Task 3 implementiert) ---
-function buildQuizQueue() {}
-function nextQuestion() {}
-function checkAnswer(key) {}
+// --- Üben: echter Abruf, Stupser statt Lösung, niedrige Stakes ---
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function buildQuizQueue() {
+  const keys = (CONFIG.includedKeys && CONFIG.includedKeys.length) ? CONFIG.includedKeys.slice() : REGIONS.map(r => r.key);
+  const q = keys.map((k, i) => ({ key: k, type: (i % 2 === 0) ? "locate" : "capital" }));
+  shuffle(q);                 // Interleaving: Fragetypen + Regionen gemischt
+  state.queue = q;
+  state.score = 0;
+}
+
+function nextQuestion() {
+  state.hintLevel = 0;
+  $("#hint").textContent = "";
+  $("#feedback").textContent = "";
+  clearHintHighlight();
+  if (state.queue.length === 0) { finishQuiz(); return; }
+  state.current = state.queue.shift();
+  renderQuestion(state.current);
+}
+
+function renderQuestion(q) {
+  const r = regionByKey(q.key);
+  const ch = $("#choices");
+  ch.replaceChildren();
+  if (q.type === "locate") {
+    $("#question").textContent = "Klick " + r.name + " auf der Karte! 🗺️";
+  } else {
+    $("#question").textContent = "Welche Hauptstadt gehört zu " + r.name + "?";
+    capitalOptions(r, 3).forEach(cap => {
+      const btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.textContent = cap;
+      btn.addEventListener("click", () => checkAnswer(cap));
+      ch.appendChild(btn);
+    });
+  }
+}
+
+function capitalOptions(r, n) {
+  const others = REGIONS.filter(x => x.key !== r.key).map(x => x.capital);
+  shuffle(others);
+  return shuffle([r.capital, ...others.slice(0, Math.max(1, n - 1))]);
+}
+
+// answer = Land-Key (Karte angeklickt) ODER Hauptstadt (Knopf) — beides zählt als richtig
+function checkAnswer(answer) {
+  if (!state.current) return;
+  const r = regionByKey(state.current.key);
+  const correct = (answer === r.key) || (answer === r.capital);
+  if (correct) celebrate(r); else nochNicht(r);
+}
+
+function celebrate(r) {
+  state.score++;
+  markDiscovered(r.key);            // gelernte Länder werden eingefärbt = positiver Fortschritt
+  clearHintHighlight();
+  $("#feedback").textContent = state.current.type === "locate"
+    ? "Super! ⭐ Das ist " + r.name + "!"
+    : "Super! ⭐ " + r.capital + " ist richtig!";
+  // Spacing-lite: ab und zu kehrt ein Land später nochmal wieder
+  if (Math.random() < 0.3) state.queue.push({ key: r.key, type: state.current.type === "locate" ? "capital" : "locate" });
+  setTimeout(nextQuestion, 1100);
+}
+
+// kein "falsch", kein Game-Over, kein Punktabzug — stattdessen stupsen
+function nochNicht(r) {
+  state.hintLevel++;
+  $("#feedback").textContent = state.hintLevel < 3 ? "Noch nicht — fast! Schau nochmal 🙂" : "Noch nicht — ich helfe dir!";
+  giveHint(r);
+}
+
+function giveHint(r) {
+  const h = $("#hint");
+  if (state.hintLevel === 1) {
+    h.textContent = "Tipp: " + r.name + " liegt " + directionOf(r) + ".";
+  } else if (state.hintLevel === 2) {
+    const what = state.current.type === "capital" ? r.capital : r.name;
+    h.textContent = "Tipp: Es beginnt mit „" + what[0] + "“.";
+  } else {
+    h.textContent = "Schau, hier ist " + r.name + "! Klick es an.";
+    highlightHint(r);              // erst nach mehreren Versuchen die Lösung zeigen
+  }
+}
+
+function directionOf(r) {
+  const el = document.getElementById(r.svgId);
+  if (!el) return "in der Mitte";
+  const bb = el.getBBox();
+  const cx = bb.x + bb.width / 2, cy = bb.y + bb.height / 2;
+  const ns = cy < 1030 * 0.42 ? "Norden" : cy > 1030 * 0.6 ? "Süden" : "";
+  const ew = cx < 760 * 0.42 ? "Westen" : cx > 760 * 0.6 ? "Osten" : "";
+  const combo = { "Norden|Westen": "Nordwesten", "Norden|Osten": "Nordosten", "Süden|Westen": "Südwesten", "Süden|Osten": "Südosten" };
+  const w = combo[ns + "|" + ew] || ns || ew;
+  return w ? "im " + w : "in der Mitte";
+}
+
+function highlightHint(r) { const el = document.getElementById(r.svgId); if (el) el.classList.add("hint"); }
+function clearHintHighlight() { document.querySelectorAll(".land.hint").forEach(el => el.classList.remove("hint")); }
+
+function finishQuiz() {
+  $("#choices").replaceChildren();
+  $("#question").textContent = "Geschafft! 🎉 Du hast " + state.score + " richtig!";
+  $("#feedback").textContent = "";
+  $("#hint").textContent = "";
+  const btn = document.createElement("button");
+  btn.className = "choice-btn";
+  btn.textContent = "🔄 Nochmal";
+  btn.addEventListener("click", () => { buildQuizQueue(); nextQuestion(); });
+  $("#choices").appendChild(btn);
+}
 
 // Klick + Tastatur (Delegation, damit dispatchEvent-Klicks funktionieren)
 function wireMap() {
