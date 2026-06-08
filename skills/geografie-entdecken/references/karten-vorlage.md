@@ -183,7 +183,11 @@ const $ = sel => document.querySelector(sel);
 function regionByKey(key) { return REGIONS.find(r => r.key === key); }
 
 function startGame() {
-  if (CONFIG.childName) $("#title").textContent = CONFIG.childName + "s Deutschland-Reise 🗺️";
+  if (CONFIG.childName) {
+    const n = CONFIG.childName;
+    const genitiv = /[sßxz]$/i.test(n) ? n + "’" : n + "s";   // Linus -> Linus’, Laura -> Lauras
+    $("#title").textContent = genitiv + " Deutschland-Reise 🗺️";
+  }
   $("#start").style.display = "none";
   $("#game").style.display = "block";
   renderCompass();
@@ -316,11 +320,22 @@ function highlightHome() {
 // --- Üben: echter Abruf, Stupser statt Lösung, niedrige Stakes ---
 function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
+// Alters-Kalibrierung: 🐣 klein viel Stütze ... 🦉 älter blinder Abruf
+function difficultyForLevel(level) {
+  switch (level) {
+    case "klein":  return { blindMap: false, choices: 2, perRound: 3 };
+    case "aelter": return { blindMap: true,  choices: 4, perRound: 5 };
+    default:       return { blindMap: true,  choices: 3, perRound: 4 }; // mitte
+  }
+}
+
 function buildQuizQueue() {
+  const diff = difficultyForLevel(CONFIG.level);
   const keys = (CONFIG.includedKeys && CONFIG.includedKeys.length) ? CONFIG.includedKeys.slice() : REGIONS.map(r => r.key);
-  const q = keys.map((k, i) => ({ key: k, type: (i % 2 === 0) ? "locate" : "capital" }));
-  shuffle(q);                 // Interleaving: Fragetypen + Regionen gemischt
-  state.queue = q;
+  // klein: nur Auswahl-Fragen (viel Stütze); ab mitte: blinde Lage-Abfrage gemischt (echter Abruf)
+  const q = keys.map((k, i) => ({ key: k, type: diff.blindMap ? (i % 2 === 0 ? "locate" : "capital") : "capital" }));
+  shuffle(q);                                // Interleaving: Fragetypen + Regionen gemischt
+  state.queue = q.slice(0, diff.perRound);   // Segmentierung: Häppchen pro Runde
   state.score = 0;
 }
 
@@ -342,7 +357,7 @@ function renderQuestion(q) {
     $("#question").textContent = "Klick " + r.name + " auf der Karte! 🗺️";
   } else {
     $("#question").textContent = "Welche Hauptstadt gehört zu " + r.name + "?";
-    capitalOptions(r, 3).forEach(cap => {
+    capitalOptions(r, difficultyForLevel(CONFIG.level).choices).forEach(cap => {
       const btn = document.createElement("button");
       btn.className = "choice-btn";
       btn.textContent = cap;
